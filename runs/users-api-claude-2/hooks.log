@@ -1,0 +1,4 @@
+RECORD observed-red write_file: src/schemas/users.ts unlocked by observed red in tests/users.test.ts
+RECORD observed-red write_file: src/store/users.ts unlocked by observed red in tests/users.test.ts
+RECORD observed-red write_file: src/routes/users.ts unlocked by observed red in tests/users.test.ts
+RECORD finish-gate finish: gates green (standards 100%)

@@ -1,0 +1,3 @@
+PASS 1 files, 22 tests
+  pass tests/users.test.ts (22 tests)
+log: runs/users-api-claude-2/logs/tests-4.txt

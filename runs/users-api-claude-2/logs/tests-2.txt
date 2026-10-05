@@ -1,0 +1,11 @@
+
+ RUN  v5.0.3 /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/users-api-claude-2/generated/users-api
+
+ ✓ tests/users.test.ts (22 tests) 67ms
+
+ Test Files  1 passed (1)
+      Tests  22 passed (22)
+   Start at  09:53:53
+   Duration  205ms (tests 43%, import 37%, transform 20%, worker 1%)
+
+JSON report written to /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/users-api-claude-2/runs/users-api-claude-2/logs/tests-2.json
