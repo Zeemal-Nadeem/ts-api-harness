@@ -1,0 +1,17 @@
+$ harness check --api generated/users-api
+problem-json      pass      src/lib/problem.ts (1 ok)
+problem-json      pass      src/lib/idempotency.ts (1 ok)
+problem-json      pass      src/lib/pagination.ts (1 ok)
+problem-json      pass      src/routes/users.ts (5 ok)
+problem-json      pass      runtime (6 ok)
+rest-conventions  pass      src/routes/users.ts (5 ok)
+tsc-strict        pass      tsconfig.json (2 ok)
+tsc-strict        pass      tsc (1 ok)
+zod-boundary      pass      src/routes/users.ts (5 ok)
+
+contract-compat   n/a       no targets  (no pre-change baseline (greenfield or standalone check))
+problem-json      pass      13/13 error paths
+rest-conventions  pass      5/5 routes
+tsc-strict        pass      0 errors
+zod-boundary      pass      5/5 handlers
+verdict           100%      → all required checks green

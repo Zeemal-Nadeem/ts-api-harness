@@ -1,0 +1,11 @@
+
+ RUN  v5.0.3 /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/users-api-openai/generated/users-api
+
+ ✓ tests/users.test.ts (6 tests) 36ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  09:55:23
+   Duration  178ms (import 48%, tests 28%, transform 22%, worker 1%)
+
+JSON report written to /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/users-api-openai/runs/users-api-openai/logs/tests-5.json
