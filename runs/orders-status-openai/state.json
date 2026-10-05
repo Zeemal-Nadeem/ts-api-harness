@@ -1,0 +1,317 @@
+{
+  "runId": "orders-status-openai",
+  "observedRed": {
+    "tests/orders.test.ts": "d26d18abb1cbf02d"
+  },
+  "observedGreen": {
+    "tests/orders.test.ts": "4a31f7a26afea8c1"
+  },
+  "writes": [
+    "tests/orders.test.ts",
+    "tests/orders.test.ts",
+    "src/schemas/orders.ts",
+    "src/schemas/orders.ts",
+    "src/store/orders.ts",
+    "src/store/orders.ts",
+    "src/store/orders.ts",
+    "src/store/orders.ts",
+    "src/routes/orders.ts",
+    "src/routes/orders.ts",
+    "src/routes/orders.ts"
+  ],
+  "finished": true,
+  "lastTests": {
+    "ok": true,
+    "failed": [],
+    "passed": [
+      "tests/orders.test.ts"
+    ]
+  },
+  "lastStandards": {
+    "verdict": 100,
+    "ok": true,
+    "results": [
+      {
+        "id": "contract-compat",
+        "category": "contract",
+        "required": true,
+        "result": {
+          "status": "pass",
+          "passed": 10,
+          "total": 10,
+          "unit": "contract items",
+          "findings": [
+            {
+              "file": "src/routes/orders.ts",
+              "line": 10,
+              "ok": true,
+              "message": "route kept: GET /v1/orders"
+            },
+            {
+              "file": "src/routes/orders.ts",
+              "line": 16,
+              "ok": true,
+              "message": "route kept: POST /v1/orders"
+            },
+            {
+              "file": "src/routes/orders.ts",
+              "line": 21,
+              "ok": true,
+              "message": "route kept: GET /v1/orders/:id"
+            },
+            {
+              "file": "src/routes/orders.ts",
+              "line": 28,
+              "ok": true,
+              "message": "route kept: DELETE /v1/orders/:id"
+            },
+            {
+              "file": "src/schemas",
+              "line": 0,
+              "ok": true,
+              "message": "schema compatible: CreateOrderBody"
+            },
+            {
+              "file": "src/schemas",
+              "line": 0,
+              "ok": true,
+              "message": "schema compatible: ListOrdersQuery"
+            },
+            {
+              "file": "src/schemas",
+              "line": 0,
+              "ok": true,
+              "message": "schema compatible: Order"
+            },
+            {
+              "file": "src/schemas",
+              "line": 0,
+              "ok": true,
+              "message": "schema compatible: OrderItem"
+            },
+            {
+              "file": "src/schemas",
+              "line": 0,
+              "ok": true,
+              "message": "schema compatible: OrderPage"
+            },
+            {
+              "file": "src/schemas",
+              "line": 0,
+              "ok": true,
+              "message": "schema compatible: OrderParams"
+            }
+          ]
+        }
+      },
+      {
+        "id": "problem-json",
+        "category": "standard",
+        "required": true,
+        "result": {
+          "status": "pass",
+          "passed": 12,
+          "total": 12,
+          "unit": "error paths",
+          "findings": [
+            {
+              "file": "src/lib/problem.ts",
+              "line": 1,
+              "ok": true,
+              "message": "problem+json emitter"
+            },
+            {
+              "file": "src/lib/idempotency.ts",
+              "line": 21,
+              "ok": true,
+              "message": "problem 409"
+            },
+            {
+              "file": "src/lib/pagination.ts",
+              "line": 26,
+              "ok": true,
+              "message": "problem 422"
+            },
+            {
+              "file": "src/routes/orders.ts",
+              "line": 24,
+              "ok": true,
+              "message": "problem 404"
+            },
+            {
+              "file": "src/routes/orders.ts",
+              "line": 32,
+              "ok": true,
+              "message": "problem 404"
+            },
+            {
+              "file": "src/routes/orders.ts",
+              "line": 37,
+              "ok": true,
+              "message": "problem 409"
+            },
+            {
+              "file": "src/routes/orders.ts",
+              "line": 44,
+              "ok": true,
+              "message": "problem 404"
+            },
+            {
+              "file": "runtime",
+              "line": 0,
+              "ok": true,
+              "message": "unknown route"
+            },
+            {
+              "file": "runtime",
+              "line": 0,
+              "ok": true,
+              "message": "GET /v1/orders invalid limit"
+            },
+            {
+              "file": "runtime",
+              "line": 0,
+              "ok": true,
+              "message": "POST /v1/orders invalid body"
+            },
+            {
+              "file": "runtime",
+              "line": 0,
+              "ok": true,
+              "message": "GET /v1/orders/:id unknown id"
+            },
+            {
+              "file": "runtime",
+              "line": 0,
+              "ok": true,
+              "message": "PATCH /v1/orders/:id invalid body"
+            },
+            {
+              "file": "runtime",
+              "line": 0,
+              "ok": true,
+              "message": "DELETE /v1/orders/:id unknown id"
+            }
+          ]
+        }
+      },
+      {
+        "id": "rest-conventions",
+        "category": "standard",
+        "required": true,
+        "result": {
+          "status": "pass",
+          "passed": 5,
+          "total": 5,
+          "unit": "routes",
+          "findings": [
+            {
+              "file": "src/routes/orders.ts",
+              "line": 10,
+              "ok": true,
+              "message": "GET /v1/orders"
+            },
+            {
+              "file": "src/routes/orders.ts",
+              "line": 16,
+              "ok": true,
+              "message": "POST /v1/orders"
+            },
+            {
+              "file": "src/routes/orders.ts",
+              "line": 21,
+              "ok": true,
+              "message": "GET /v1/orders/:id"
+            },
+            {
+              "file": "src/routes/orders.ts",
+              "line": 28,
+              "ok": true,
+              "message": "PATCH /v1/orders/:id"
+            },
+            {
+              "file": "src/routes/orders.ts",
+              "line": 42,
+              "ok": true,
+              "message": "DELETE /v1/orders/:id"
+            }
+          ]
+        }
+      },
+      {
+        "id": "tsc-strict",
+        "category": "standard",
+        "required": true,
+        "result": {
+          "status": "pass",
+          "passed": 0,
+          "total": 0,
+          "unit": "errors",
+          "findings": [
+            {
+              "file": "tsconfig.json",
+              "line": 1,
+              "ok": true,
+              "message": "strict: true"
+            },
+            {
+              "file": "tsconfig.json",
+              "line": 1,
+              "ok": true,
+              "message": "noUncheckedIndexedAccess: true"
+            },
+            {
+              "file": "tsc",
+              "line": 0,
+              "ok": true,
+              "message": "0 errors"
+            }
+          ]
+        }
+      },
+      {
+        "id": "zod-boundary",
+        "category": "standard",
+        "required": true,
+        "result": {
+          "status": "pass",
+          "passed": 5,
+          "total": 5,
+          "unit": "handlers",
+          "findings": [
+            {
+              "file": "src/routes/orders.ts",
+              "line": 10,
+              "ok": true,
+              "message": "GET /v1/orders"
+            },
+            {
+              "file": "src/routes/orders.ts",
+              "line": 16,
+              "ok": true,
+              "message": "POST /v1/orders"
+            },
+            {
+              "file": "src/routes/orders.ts",
+              "line": 21,
+              "ok": true,
+              "message": "GET /v1/orders/:id"
+            },
+            {
+              "file": "src/routes/orders.ts",
+              "line": 28,
+              "ok": true,
+              "message": "PATCH /v1/orders/:id"
+            },
+            {
+              "file": "src/routes/orders.ts",
+              "line": 42,
+              "ok": true,
+              "message": "DELETE /v1/orders/:id"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

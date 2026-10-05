@@ -1,0 +1,39 @@
+{
+  "runId": "orders-status-openai",
+  "status": "FINISHED",
+  "ok": true,
+  "standards": {
+    "verdict": 100,
+    "ok": true
+  },
+  "tests": "PASS",
+  "observedRed": [
+    "tests/orders.test.ts"
+  ],
+  "writes": [
+    "tests/orders.test.ts",
+    "tests/orders.test.ts",
+    "src/schemas/orders.ts",
+    "src/schemas/orders.ts",
+    "src/store/orders.ts",
+    "src/store/orders.ts",
+    "src/store/orders.ts",
+    "src/store/orders.ts",
+    "src/routes/orders.ts",
+    "src/routes/orders.ts",
+    "src/routes/orders.ts"
+  ],
+  "tokens": {
+    "turns": 31,
+    "baselineInputTokens": 474119,
+    "actualInputTokens": 177231,
+    "reductionPct": 62.6,
+    "peakBaselineInputTokens": 20614,
+    "peakActualInputTokens": 6931,
+    "peakReductionPct": 66.4,
+    "providerInputTokens": 174867,
+    "providerOutputTokens": 4489
+  },
+  "branch": "harness/orders-status-openai",
+  "worktree": ".harness/worktrees/orders-status-openai"
+}
