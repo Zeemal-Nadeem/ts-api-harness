@@ -1,0 +1,18 @@
+{
+  "runId": "users-api-claude",
+  "observedRed": {
+    "tests/users.test.ts": "da60ec12e78ed6b6"
+  },
+  "observedGreen": {},
+  "writes": [
+    "tests/users.test.ts"
+  ],
+  "finished": false,
+  "lastTests": {
+    "ok": false,
+    "failed": [
+      "tests/users.test.ts"
+    ],
+    "passed": []
+  }
+}

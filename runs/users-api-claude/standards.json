@@ -1,0 +1,114 @@
+{
+  "verdict": 0,
+  "ok": false,
+  "results": [
+    {
+      "id": "contract-compat",
+      "category": "contract",
+      "required": true,
+      "result": {
+        "status": "n/a",
+        "passed": 0,
+        "total": 0,
+        "unit": "contract items",
+        "findings": [],
+        "detail": "no pre-change baseline (greenfield or standalone check)"
+      }
+    },
+    {
+      "id": "problem-json",
+      "category": "standard",
+      "required": true,
+      "result": {
+        "status": "unproven",
+        "passed": 2,
+        "total": 2,
+        "unit": "error paths",
+        "findings": [
+          {
+            "file": "src/lib/problem.ts",
+            "line": 1,
+            "ok": true,
+            "message": "problem+json emitter"
+          },
+          {
+            "file": "src/lib/idempotency.ts",
+            "line": 21,
+            "ok": true,
+            "message": "problem 409"
+          },
+          {
+            "file": "src/lib/pagination.ts",
+            "line": 26,
+            "ok": true,
+            "message": "problem 422"
+          }
+        ],
+        "detail": "runtime probe could not boot src/app.ts: Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/users-api-claude/generated/users-api/src/routes/users.ts' imported from /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/users-api-claude/generated/users-api/src/app.ts"
+      }
+    },
+    {
+      "id": "rest-conventions",
+      "category": "standard",
+      "required": true,
+      "result": {
+        "status": "unproven",
+        "passed": 0,
+        "total": 0,
+        "unit": "routes",
+        "findings": [],
+        "detail": "no routes found"
+      }
+    },
+    {
+      "id": "tsc-strict",
+      "category": "standard",
+      "required": true,
+      "result": {
+        "status": "fail",
+        "passed": 0,
+        "total": 2,
+        "unit": "errors",
+        "findings": [
+          {
+            "file": "tsconfig.json",
+            "line": 1,
+            "ok": true,
+            "message": "strict: true"
+          },
+          {
+            "file": "tsconfig.json",
+            "line": 1,
+            "ok": true,
+            "message": "noUncheckedIndexedAccess: true"
+          },
+          {
+            "file": "src/app.ts",
+            "line": 3,
+            "ok": false,
+            "message": "error TS2307: Cannot find module './routes/users.ts' or its corresponding type declarations."
+          },
+          {
+            "file": "tests/users.test.ts",
+            "line": 4,
+            "ok": false,
+            "message": "error TS2307: Cannot find module '../src/store/users.ts' or its corresponding type declarations."
+          }
+        ]
+      }
+    },
+    {
+      "id": "zod-boundary",
+      "category": "standard",
+      "required": true,
+      "result": {
+        "status": "unproven",
+        "passed": 0,
+        "total": 0,
+        "unit": "handlers",
+        "findings": [],
+        "detail": "no routes found"
+      }
+    }
+  ]
+}

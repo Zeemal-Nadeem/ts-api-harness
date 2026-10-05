@@ -1,0 +1,29 @@
+{
+  "runId": "users-api-claude",
+  "status": "INCOMPLETE",
+  "ok": false,
+  "standards": {
+    "verdict": 0,
+    "ok": false
+  },
+  "tests": "FAIL 1/1 files, 0/0 tests failed",
+  "observedRed": [
+    "tests/users.test.ts"
+  ],
+  "writes": [
+    "tests/users.test.ts"
+  ],
+  "tokens": {
+    "turns": 40,
+    "baselineInputTokens": 1969681,
+    "actualInputTokens": 295765,
+    "reductionPct": 85,
+    "peakBaselineInputTokens": 103916,
+    "peakActualInputTokens": 12397,
+    "peakReductionPct": 88.1,
+    "providerInputTokens": 532296,
+    "providerOutputTokens": 13819
+  },
+  "branch": "harness/users-api-claude",
+  "worktree": ".harness/worktrees/users-api-claude"
+}

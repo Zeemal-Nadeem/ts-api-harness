@@ -1,0 +1,14 @@
+$ harness check --api generated/users-api
+problem-json      pass      src/lib/problem.ts (1 ok)
+problem-json      pass      src/lib/idempotency.ts (1 ok)
+problem-json      pass      src/lib/pagination.ts (1 ok)
+tsc-strict        pass      tsconfig.json (2 ok)
+tsc-strict        fail      src/app.ts:3 error TS2307: Cannot find module './routes/users.ts' or its corresponding type declarations.
+tsc-strict        fail      tests/users.test.ts:4 error TS2307: Cannot find module '../src/store/users.ts' or its corresponding type declarations.
+
+contract-compat   n/a       no targets  (no pre-change baseline (greenfield or standalone check))
+problem-json      UNPROVEN  2/2 error paths  (runtime probe could not boot src/app.ts: Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/users-api-claude/generated/users-api/src/routes/users.ts' imported from /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/users-api-claude/generated/users-api/src/app.ts)
+rest-conventions  UNPROVEN  0/0 routes  (no routes found)
+tsc-strict        fail      2 errors
+zod-boundary      UNPROVEN  0/0 handlers  (no routes found)
+verdict           0%        → NOT green
