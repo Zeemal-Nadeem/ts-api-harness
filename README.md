@@ -93,11 +93,18 @@ These are stand-ins: the assignment PDF says a task file and a sample repo would
 
 The task schema rejects unknown keys, so a task cannot name a model, provider or prompt format.
 
-## Status of the evidence
+## Run evidence
 
-| Item | Status |
-|---|---|
-| Harness, gates, checks, extension examples | Done; covered by `npm test` (offline replay driver) |
-| Standards on `sample/orders-api` | 100% (`./bin/harness check --api sample/orders-api`) |
-| Runs with `--driver claude` / `--driver openai` | **UNPROVEN until run with real keys.** Logs and token reports land on the run branches. |
-| PR opened by the harness | **UNPROVEN until `harness ship` runs against a repo with an `origin` remote.** |
+The drivers were routed through OpenRouter (`anthropic/claude-opus-5.5`, `openai/gpt-5.5`). Every number below comes from the run's own `runs/<runId>/summary.json` and `tokens/<runId>.json`, on branch `harness/<runId>`.
+
+| Run | Task | Driver | Turns | Standards | Tests | Token reduction (est.) |
+|---|---|---|---|---|---|---|
+| `users-api-claude-2` | greenfield | claude | 6 | 100% | 22/22 | 45.1% |
+| `users-api-openai` | greenfield | openai | 18 | 100% | 6/6 | 49.2% |
+| `orders-status-claude` | brownfield | claude | 6 | 100% (contract 10/10) | 13/13 | 59.0% |
+| `orders-status-openai` | brownfield | openai | 31 | 100% (contract 10/10) | 10/10 | 62.6% |
+| `users-api-claude` | greenfield | claude | 40 | 0% | — | 85.0% |
+
+`users-api-claude` is the failed first run. It hit a compaction bug: file reads were dropped after two rounds and the model looped. The gates held, the run was scored 0% and is not shippable. It is kept as evidence; the fix is in `core/context.ts` and covered by `npm test`.
+
+**Honest read on tokens:** the reductions are well below the 90% target. These runs are short, the stand-in API is small, and the models chose to fetch most scaffold files and standards, so the front-loaded baseline is not much larger than what they fetched anyway. The one long run (the failed 40-turn one) reached 85%. The figures are what the harness measured.
