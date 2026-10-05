@@ -9,13 +9,27 @@ import { join } from "node:path";
 import { walk } from "./api-model.ts";
 import type { Message, Registry, Task, ToolCall } from "./types.ts";
 
+/** Volatile results (tests, checks, search) stay verbatim for this many rounds. */
 export const KEEP_ROUNDS = 2;
-export const COMPACT_STEP = 1;
+/** Sticky results (file reads, standards) stay verbatim until superseded or this old. */
+export const STICKY_MAX_ROUNDS = 15;
 
 export type Entry =
   | { kind: "user"; text: string }
   | { kind: "assistant"; text: string; calls: ToolCall[]; opaque?: unknown }
-  | { kind: "tool"; results: { callId: string; name: string; content: string; raw: string; summary: string }[] };
+  | { kind: "tool"; results: ToolEntryResult[] };
+
+export interface ToolEntryResult {
+  callId: string;
+  name: string;
+  /** Canonical JSON of the call arguments (for repeat detection). */
+  args: string;
+  content: string;
+  raw: string;
+  summary: string;
+  key?: string;
+  sticky?: boolean;
+}
 
 export function buildSystem(registry: Registry): string {
   const checks = registry.checks.map((c) => c.id).join(", ");
@@ -84,16 +98,44 @@ function elideArgs(call: ToolCall): ToolCall {
   return { ...call, args };
 }
 
+const supersedes = (later: string, earlier: string): boolean => later === earlier || earlier.startsWith(`${later}:`);
+
+/** For each tool result (by round, index): is it shown verbatim in an actual-mode request? */
+function verbatimMap(history: Entry[]): Map<ToolEntryResult, boolean> {
+  const rounds = history.filter((e): e is Extract<Entry, { kind: "tool" }> => e.kind === "tool");
+  const flat = rounds.flatMap((e, r) => e.results.map((res, i) => ({ res, r, i })));
+  const out = new Map<ToolEntryResult, boolean>();
+  for (const { res, r, i } of flat) {
+    const age = rounds.length - 1 - r;
+    const superseded =
+      res.key !== undefined &&
+      flat.some((o) => o.res.key !== undefined && (o.r > r || (o.r === r && o.i > i)) && supersedes(o.res.key, res.key ?? ""));
+    out.set(res, res.sticky ? !superseded && age < STICKY_MAX_ROUNDS : age < KEEP_ROUNDS);
+  }
+  return out;
+}
+
+/** If an identical sticky call's result is still verbatim in context, return its round number. */
+export function stillInContext(history: Entry[], name: string, args: string): number | undefined {
+  const verbatim = verbatimMap(history);
+  let round = 0;
+  let found: number | undefined;
+  for (const e of history) {
+    if (e.kind !== "tool") continue;
+    round++;
+    for (const r of e.results) if (r.sticky && r.name === name && r.args === args && verbatim.get(r)) found = round;
+  }
+  return found;
+}
+
 /**
- * Render history for a request. Rounds older than the compaction boundary are
- * reduced to summaries; the boundary only moves every COMPACT_STEP rounds.
+ * Render history for a request. Volatile tool results older than KEEP_ROUNDS
+ * and superseded/stale sticky results are reduced to one-line summaries.
  */
 export function render(history: Entry[], mode: "actual" | "baseline"): Message[] {
-  const rounds = history.filter((e) => e.kind === "tool").length;
-  const boundary = mode === "baseline" ? 0 : Math.max(0, Math.floor((rounds - KEEP_ROUNDS) / COMPACT_STEP) * COMPACT_STEP);
+  const verbatim = verbatimMap(history);
   // Large write arguments are already on disk; only the latest assistant turn keeps them verbatim.
   const lastAssistant = history.map((e) => e.kind).lastIndexOf("assistant");
-  let seen = 0;
   const out: Message[] = [];
   history.forEach((e, i) => {
     if (e.kind === "user") out.push({ role: "user", text: e.text });
@@ -101,14 +143,17 @@ export function render(history: Entry[], mode: "actual" | "baseline"): Message[]
       const elide = mode === "actual" && i !== lastAssistant;
       out.push({ role: "assistant", text: e.text, calls: elide ? e.calls.map(elideArgs) : e.calls, opaque: e.opaque });
     } else {
-      const old = seen < boundary;
-      seen++;
       out.push({
         role: "tool",
         results: e.results.map((r) => ({
           callId: r.callId,
           name: r.name,
-          content: mode === "baseline" ? r.raw : old ? r.summary : r.content,
+          content:
+            mode === "baseline"
+              ? r.raw
+              : verbatim.get(r)
+                ? r.content
+                : `[compacted by harness] ${r.summary}${r.sticky ? " — content no longer in context; fetch again if you need it" : ""}`,
         })),
       });
     }

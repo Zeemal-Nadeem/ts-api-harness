@@ -67,7 +67,12 @@ Everything else is fetched when needed: `read_file` (ranged, at most 250 lines p
 **Mechanisms behind the reduction:**
 1. **JIT fetchers.** No source or standards text is front-loaded.
 2. **Compact tool returns.** Tests return `PASS n files` or a list of failing tests with one-line reasons. Checks return the summary plus failing locations. Raw logs go to `runs/<id>/logs/` and are referenced by path.
-3. **Compaction.** Tool rounds older than the last two are replaced by one-line summaries; a test summary keeps the failing test names.
+3. **Compaction by kind.**
+   - Volatile results (tests, checks, search) older than two rounds become one-line summaries; a test summary keeps the failing test names.
+   - Fetched knowledge (`read_file`, `get_standard`) stays verbatim until it is superseded or 15 rounds old. A newer read of the same range or a write to the file supersedes it.
+   - A repeat of a fetch whose result is still in context returns "unchanged" instead of re-sending it.
+   - A stall guard nudges once after six turns without writing or testing.
+   - Why: the first real run compacted file reads after two rounds, which left the model re-reading the same files until its 40-turn budget ran out. That run is kept as `harness/users-api-claude`.
 4. **Write elision.** Large `write_file`/`edit_file` arguments are elided from every assistant turn except the latest, since the content is on disk.
 
 **Measurement (`tokens/<runId>.json`).** On every turn the harness serialises the request it actually sent. In shadow, it also serialises the request a harness without fetchers or compaction would have sent for the same conversation: the whole API source and every standard front-loaded, raw tool output, nothing compacted. Both columns use the same chars/4 estimator, so the ratio is apples to apples. The provider-reported input tokens for the real request are recorded next to them. `--baseline` performs that no-JIT run for real, so the shadow figure can be checked against provider-reported numbers.

@@ -33,7 +33,7 @@ const getStandard: ToolPlugin<{ rule: string }> = {
   input: z.object({ rule: z.string() }),
   async run({ rule }, ctx) {
     const text = standardText(ctx.harnessRoot, ctx.registry, rule);
-    return { content: text, summary: `get_standard ${rule}` };
+    return { content: text, summary: `get_standard ${rule}`, contextKey: `standard:${rule}`, sticky: true };
   },
 };
 

@@ -5,7 +5,7 @@
 import { appendFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, relative } from "node:path";
 import { z } from "zod";
-import { buildBrief, buildFrontload, buildSystem, render, type Entry } from "./context.ts";
+import { buildBrief, buildFrontload, buildSystem, render, stillInContext, type Entry, type ToolEntryResult } from "./context.ts";
 import { renderStandards, runStandards } from "./standards.ts";
 import { loadTask } from "./task.ts";
 import { estimateTokens } from "./util.ts";
@@ -39,6 +39,9 @@ export function toolSpecs(registry: Registry): ToolSpec[] {
 }
 
 // Driver-private payloads (e.g. reasoning blocks) are excluded from both columns.
+const PROGRESS_TOOLS = new Set(["write_file", "edit_file", "run_tests", "run_checks", "finish"]);
+const STALL_TURNS = 6;
+
 const estimate = (req: TurnRequest): number => estimateTokens(JSON.stringify(req, (k, v: unknown) => (k === "opaque" ? undefined : v)));
 
 export function saveState(runDir: string, state: RunState): void {
@@ -91,6 +94,7 @@ export async function runTask(opts: RunOptions): Promise<RunResult> {
   const rows: { turn: number; baselineInputTokens: number; actualInputTokens: number; providerInputTokens: number; providerOutputTokens: number }[] = [];
   const maxTurns = opts.maxTurns ?? task.maxTurns;
   let status: RunResult["status"] = "INCOMPLETE";
+  let sinceProgress = 0;
 
   say(`run ${runId}  driver=${driver.id} model=${driver.model}  mode=${opts.baseline ? "BASELINE (no JIT, no compaction)" : "actual"}`);
   say(`workspace ${relative(harnessRoot, ws.worktree)} on ${ws.branch}`);
@@ -131,15 +135,37 @@ export async function runTask(opts: RunOptions): Promise<RunResult> {
       continue;
     }
 
-    const results: Extract<Entry, { kind: "tool" }>["results"] = [];
+    const results: ToolEntryResult[] = [];
     for (const call of res.calls) {
-      const out = await executeCall(call, ctx);
-      results.push({ callId: call.id, name: call.name, content: out.content, raw: out.raw ?? out.content, summary: out.summary ?? `${call.name}: ${out.content.split("\n")[0]?.slice(0, 120) ?? ""}` });
+      const args = canonical(call.args);
+      // Re-fetching knowledge that is still verbatim in context costs tokens and signals a loop.
+      const seenIn = opts.baseline ? undefined : stillInContext(history, call.name, args);
+      const out: ToolOutput =
+        seenIn !== undefined
+          ? { content: `unchanged: the result of this exact ${call.name} call is still in your context (tool round ${seenIn}); not re-sent.`, summary: `${call.name} (repeat, not re-sent)` }
+          : await executeCall(call, ctx);
+      results.push({
+        callId: call.id,
+        name: call.name,
+        args,
+        content: out.content,
+        raw: out.raw ?? out.content,
+        summary: out.summary ?? `${call.name}: ${out.content.split("\n")[0]?.slice(0, 120) ?? ""}`,
+        key: out.contextKey,
+        sticky: out.sticky,
+      });
       say(`turn ${turn}: ${call.name} ${argPreview(call)} -> ${out.content.split("\n")[0]?.slice(0, 140) ?? ""}`);
       appendFileSync(join(runDir, "transcript.jsonl"), JSON.stringify({ turn, role: "tool", name: call.name, content: out.content }) + "\n");
     }
     history.push({ kind: "tool", results });
     saveState(runDir, state);
+
+    // Stall guard: reading without acting for too long gets one deterministic nudge.
+    sinceProgress = res.calls.some((c) => PROGRESS_TOOLS.has(c.name)) ? 0 : sinceProgress + 1;
+    if (sinceProgress === STALL_TURNS) {
+      history.push({ kind: "user", text: `Harness: ${STALL_TURNS} turns without writing or testing. What you fetched is still in context unless marked [compacted]. Write the next test or source change now.` });
+      say(`turn ${turn}: stall guard nudged`);
+    }
   }
   if (state.finished) status = "FINISHED";
 
@@ -204,6 +230,12 @@ export async function runTask(opts: RunOptions): Promise<RunResult> {
   say(`tokens            actual ${actualTotal} vs baseline ${baselineTotal} (est.) -> ${tokenReport.summary.reductionPct}% reduction; peak ${tokenReport.summary.peakReductionPct}%`);
   say(`status            ${status}${ok ? " — ready to ship: harness ship --run " + runId : " — not shippable"}`);
   return { ok, runId, runDir, worktree: ws.worktree, status };
+}
+
+function canonical(v: unknown): string {
+  return JSON.stringify(v, (_k, x: unknown) =>
+    x && typeof x === "object" && !Array.isArray(x) ? Object.fromEntries(Object.entries(x as Record<string, unknown>).sort(([a], [b]) => a.localeCompare(b))) : x,
+  );
 }
 
 function argPreview(call: ToolCall): string {

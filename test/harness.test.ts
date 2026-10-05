@@ -128,3 +128,25 @@ describe("extensibility", () => {
     expect(existsSync(join(ROOT, "plugins/tools/openapi-diff.ts"))).toBe(false);
   }, 60_000);
 });
+
+describe("context compaction", () => {
+  const read = (path: string, n: number) => ({ kind: "tool" as const, results: [{ callId: `r${n}`, name: "read_file", args: JSON.stringify({ path }), content: `CONTENT ${path}`, raw: `CONTENT ${path}`, summary: `read_file ${path}`, key: `file:${path}:1-10`, sticky: true }] });
+  const test = (n: number) => ({ kind: "tool" as const, results: [{ callId: `t${n}`, name: "run_tests", args: "{}", content: `FAIL details ${n}`, raw: `RAW ${n}`, summary: `run_tests FAIL ${n}` }] });
+  const write = (path: string, n: number) => ({ kind: "tool" as const, results: [{ callId: `w${n}`, name: "write_file", args: "{}", content: `wrote ${path}`, raw: `wrote ${path}`, summary: `wrote ${path}`, key: `file:${path}` }] });
+  const asst = { kind: "assistant" as const, text: "", calls: [] };
+
+  it("keeps file reads verbatim until superseded, compacts volatile output after two rounds", async () => {
+    const { render, stillInContext } = await import("../core/context.ts");
+    const h = [{ kind: "user" as const, text: "brief" }, asst, read("src/a.ts", 1), asst, test(2), asst, test(3), asst, test(4)];
+    const text = JSON.stringify(render(h, "actual"));
+    expect(text).toContain("CONTENT src/a.ts");
+    expect(text).toContain("[compacted by harness] run_tests FAIL 2");
+    expect(text).toContain("FAIL details 4");
+    expect(stillInContext(h, "read_file", JSON.stringify({ path: "src/a.ts" }))).toBe(1);
+
+    const h2 = [...h, asst, write("src/a.ts", 5)];
+    expect(JSON.stringify(render(h2, "actual"))).not.toContain("CONTENT src/a.ts");
+    expect(stillInContext(h2, "read_file", JSON.stringify({ path: "src/a.ts" }))).toBeUndefined();
+    expect(JSON.stringify(render(h2, "baseline"))).toContain("RAW 2");
+  });
+});

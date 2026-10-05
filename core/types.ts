@@ -93,6 +93,14 @@ export interface ToolOutput {
   raw?: string;
   /** One-liner that replaces content once this result is compacted out of the window. */
   summary?: string;
+  /**
+   * Identity of the context this result carries, e.g. "file:src/app.ts:1-80".
+   * A later result whose key equals it, or is a prefix of it ("file:src/app.ts"
+   * from a write), supersedes it.
+   */
+  contextKey?: string;
+  /** Fetched knowledge: kept verbatim until superseded (or very old) instead of compacting after a couple of rounds. */
+  sticky?: boolean;
 }
 
 export interface RunState {

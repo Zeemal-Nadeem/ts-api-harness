@@ -27,6 +27,8 @@ const readFile: ToolPlugin<{ path: string; from?: number | undefined; to?: numbe
       content: `${rel} (${all.length} lines)\n${body}${more}`,
       raw: `${rel}\n${number(all, 1)}`,
       summary: `read_file ${rel} lines ${start}-${end}`,
+      contextKey: `file:${rel}:${start}-${end}`,
+      sticky: true,
     };
   },
 };
@@ -77,7 +79,7 @@ const writeFile: ToolPlugin<{ path: string; content: string }> = {
     writeFileSync(abs, content);
     ctx.state.writes.push(rel);
     const n = content.split("\n").length;
-    return { content: `wrote ${rel} (${n} lines)`, summary: `write_file ${rel} (${n} lines)` };
+    return { content: `wrote ${rel} (${n} lines)`, summary: `write_file ${rel} (${n} lines)`, contextKey: `file:${rel}` };
   },
 };
 
@@ -94,7 +96,7 @@ const editFile: ToolPlugin<{ path: string; find: string; replace: string }> = {
     if (count !== 1) return { content: `ERROR: \`find\` occurs ${count} times in ${rel}; it must occur exactly once` };
     writeFileSync(abs, text.replace(find, () => replace));
     ctx.state.writes.push(rel);
-    return { content: `edited ${rel}`, summary: `edit_file ${rel}` };
+    return { content: `edited ${rel}`, summary: `edit_file ${rel}`, contextKey: `file:${rel}` };
   },
 };
 
