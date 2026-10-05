@@ -1,0 +1,63 @@
+{
+  "runId": "orders-status-claude",
+  "task": "orders-status",
+  "driver": "claude",
+  "model": "anthropic/claude-opus-5.5 (via OpenRouter)",
+  "mode": "actual",
+  "method": "Per turn, the harness serialises the exact request it sent (system+tools+messages) and, in shadow, the request a no-JIT/no-compaction harness would have sent for the same conversation (API source + all standards front-loaded, raw tool output, no compaction). Both columns use the same chars/4 estimator; providerInputTokens is the provider-reported usage for the request actually sent.",
+  "turns": [
+    {
+      "turn": 1,
+      "baselineInputTokens": 4983,
+      "actualInputTokens": 1130,
+      "providerInputTokens": 2082,
+      "providerOutputTokens": 363
+    },
+    {
+      "turn": 2,
+      "baselineInputTokens": 7898,
+      "actualInputTokens": 4062,
+      "providerInputTokens": 6950,
+      "providerOutputTokens": 139
+    },
+    {
+      "turn": 3,
+      "baselineInputTokens": 8317,
+      "actualInputTokens": 4481,
+      "providerInputTokens": 7598,
+      "providerOutputTokens": 1923
+    },
+    {
+      "turn": 4,
+      "baselineInputTokens": 11025,
+      "actualInputTokens": 5334,
+      "providerInputTokens": 8928,
+      "providerOutputTokens": 298
+    },
+    {
+      "turn": 5,
+      "baselineInputTokens": 13068,
+      "actualInputTokens": 4581,
+      "providerInputTokens": 7787,
+      "providerOutputTokens": 2247
+    },
+    {
+      "turn": 6,
+      "baselineInputTokens": 14871,
+      "actualInputTokens": 5096,
+      "providerInputTokens": 8606,
+      "providerOutputTokens": 531
+    }
+  ],
+  "summary": {
+    "turns": 6,
+    "baselineInputTokens": 60162,
+    "actualInputTokens": 24684,
+    "reductionPct": 59,
+    "peakBaselineInputTokens": 14871,
+    "peakActualInputTokens": 5334,
+    "peakReductionPct": 64.1,
+    "providerInputTokens": 41951,
+    "providerOutputTokens": 5501
+  }
+}

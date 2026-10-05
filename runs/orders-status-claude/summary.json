@@ -1,0 +1,33 @@
+{
+  "runId": "orders-status-claude",
+  "status": "FINISHED",
+  "ok": true,
+  "standards": {
+    "verdict": 100,
+    "ok": true
+  },
+  "tests": "PASS",
+  "observedRed": [
+    "tests/orders.test.ts"
+  ],
+  "writes": [
+    "tests/orders.test.ts",
+    "src/schemas/orders.ts",
+    "src/schemas/orders.ts",
+    "src/store/orders.ts",
+    "src/routes/orders.ts"
+  ],
+  "tokens": {
+    "turns": 6,
+    "baselineInputTokens": 60162,
+    "actualInputTokens": 24684,
+    "reductionPct": 59,
+    "peakBaselineInputTokens": 14871,
+    "peakActualInputTokens": 5334,
+    "peakReductionPct": 64.1,
+    "providerInputTokens": 41951,
+    "providerOutputTokens": 5501
+  },
+  "branch": "harness/orders-status-claude",
+  "worktree": ".harness/worktrees/orders-status-claude"
+}

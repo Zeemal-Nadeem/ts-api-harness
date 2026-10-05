@@ -50,3 +50,90 @@ describe("orders api", () => {
     expect(del.status).toBe(204);
   });
 });
+
+describe("order status lifecycle", () => {
+  const unknownId = "00000000-0000-4000-8000-000000000000";
+  const create = async () => (await request(app).post("/v1/orders").send({ customerId, items })).body;
+
+  it("new orders start as pending", async () => {
+    const order = await create();
+    expect(order.status).toBe("pending");
+    const fetched = await request(app).get(`/v1/orders/${order.id}`);
+    expect(fetched.body.status).toBe("pending");
+  });
+
+  it("transitions pending -> paid -> shipped with 200", async () => {
+    const order = await create();
+    const paid = await request(app).patch(`/v1/orders/${order.id}`).send({ status: "paid" });
+    expect(paid.status).toBe(200);
+    expect(paid.body).toMatchObject({ id: order.id, status: "paid", totalCents: 2500 });
+    const shipped = await request(app).patch(`/v1/orders/${order.id}`).send({ status: "shipped" });
+    expect(shipped.status).toBe(200);
+    expect(shipped.body.status).toBe("shipped");
+  });
+
+  it("allows pending -> cancelled and paid -> cancelled", async () => {
+    const a = await create();
+    expect((await request(app).patch(`/v1/orders/${a.id}`).send({ status: "cancelled" })).status).toBe(200);
+    const b = await create();
+    await request(app).patch(`/v1/orders/${b.id}`).send({ status: "paid" });
+    const res = await request(app).patch(`/v1/orders/${b.id}`).send({ status: "cancelled" });
+    expect(res.status).toBe(200);
+    expect(res.body.status).toBe("cancelled");
+  });
+
+  it("rejects disallowed transitions with a 409 problem", async () => {
+    const order = await create();
+    const skip = await request(app).patch(`/v1/orders/${order.id}`).send({ status: "shipped" });
+    expect(skip.status).toBe(409);
+    expect(skip.headers["content-type"]).toMatch(/application\/problem\+json/);
+    expect(skip.body).toMatchObject({ status: 409, instance: `/v1/orders/${order.id}` });
+    const same = await request(app).patch(`/v1/orders/${order.id}`).send({ status: "pending" });
+    expect(same.status).toBe(409);
+    await request(app).patch(`/v1/orders/${order.id}`).send({ status: "cancelled" });
+    const fromCancelled = await request(app).patch(`/v1/orders/${order.id}`).send({ status: "paid" });
+    expect(fromCancelled.status).toBe(409);
+  });
+
+  it("returns 404 problem for an unknown id", async () => {
+    const res = await request(app).patch(`/v1/orders/${unknownId}`).send({ status: "paid" });
+    expect(res.status).toBe(404);
+    expect(res.headers["content-type"]).toMatch(/application\/problem\+json/);
+  });
+
+  it("returns 422 problem for an invalid status", async () => {
+    const order = await create();
+    const res = await request(app).patch(`/v1/orders/${order.id}`).send({ status: "lost" });
+    expect(res.status).toBe(422);
+    expect(res.headers["content-type"]).toMatch(/application\/problem\+json/);
+    const empty = await request(app).patch(`/v1/orders/${order.id}`).send({});
+    expect(empty.status).toBe(422);
+  });
+
+  it("honours Idempotency-Key on PATCH", async () => {
+    const order = await create();
+    const a = await request(app).patch(`/v1/orders/${order.id}`).set("Idempotency-Key", "p1").send({ status: "paid" });
+    const b = await request(app).patch(`/v1/orders/${order.id}`).set("Idempotency-Key", "p1").send({ status: "paid" });
+    expect(a.status).toBe(200);
+    expect(b.status).toBe(200);
+    expect(b.body).toEqual(a.body);
+    const reuse = await request(app).patch(`/v1/orders/${order.id}`).set("Idempotency-Key", "p1").send({ status: "cancelled" });
+    expect(reuse.status).toBe(409);
+  });
+
+  it("filters the collection by status", async () => {
+    const a = await create();
+    await create();
+    await request(app).patch(`/v1/orders/${a.id}`).send({ status: "paid" });
+    const paid = await request(app).get("/v1/orders?status=paid");
+    expect(paid.status).toBe(200);
+    expect(paid.body.data).toHaveLength(1);
+    expect(paid.body.data[0].id).toBe(a.id);
+    const pending = await request(app).get("/v1/orders?status=pending");
+    expect(pending.body.data).toHaveLength(1);
+    const all = await request(app).get("/v1/orders");
+    expect(all.body.data).toHaveLength(2);
+    const bad = await request(app).get("/v1/orders?status=lost");
+    expect(bad.status).toBe(422);
+  });
+});

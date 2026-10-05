@@ -1,0 +1,162 @@
+
+ RUN  v5.0.3 /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/orders-status-claude/sample/orders-api
+
+ ❯ tests/orders.test.ts (13 tests | 7 failed) 44ms
+   ✓ orders api (5)
+     ✓ creates an order with 201 and computes the total 17ms
+     ✓ replays the same response for a repeated idempotency key 3ms
+     ✓ rejects an invalid body with a 422 problem 2ms
+     ✓ paginates with a cursor 6ms
+     ✓ returns 404 problem for an unknown order and 204 on delete 2ms
+   ❯ order status lifecycle (8)
+     × new orders start as pending 3ms
+     × transitions pending -> paid -> shipped with 200 2ms
+     × allows pending -> cancelled and paid -> cancelled 2ms
+     × rejects disallowed transitions with a 409 problem 1ms
+     ✓ returns 404 problem for an unknown id 1ms
+     × returns 422 problem for an invalid status 1ms
+     × honours Idempotency-Key on PATCH 2ms
+     × filters the collection by status 3ms
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 6 passed (13)
+   Start at  09:54:53
+   Duration  186ms (import 43%, tests 34%, transform 22%, worker 1%)
+
+JSON report written to /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/orders-status-claude/runs/orders-status-claude/logs/tests-1.json
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/orders.test.ts > order status lifecycle > new orders start as pending
+AssertionError: expected undefined to be 'pending' // Object.is equality
+
+- Expected:
+"pending"
+
++ Received:
+undefined
+
+ ❯ tests/orders.test.ts:60:26
+     58|   it("new orders start as pending", async () => {
+     59|     const order = await create();
+     60|     expect(order.status).toBe("pending");
+       |                          ^
+     61|     const fetched = await request(app).get(`/v1/orders/${order.id}`);
+     62|     expect(fetched.body.status).toBe("pending");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  tests/orders.test.ts > order status lifecycle > transitions pending -> paid -> shipped with 200
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/orders.test.ts:68:25
+     66|     const order = await create();
+     67|     const paid = await request(app).patch(`/v1/orders/${order.id}`).se…
+     68|     expect(paid.status).toBe(200);
+       |                         ^
+     69|     expect(paid.body).toMatchObject({ id: order.id, status: "paid", to…
+     70|     const shipped = await request(app).patch(`/v1/orders/${order.id}`)…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  tests/orders.test.ts > order status lifecycle > allows pending -> cancelled and paid -> cancelled
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/orders.test.ts:77:99
+     75|   it("allows pending -> cancelled and paid -> cancelled", async () => {
+     76|     const a = await create();
+     77|     expect((await request(app).patch(`/v1/orders/${a.id}`).send({ stat…
+       |                                                                                                   ^
+     78|     const b = await create();
+     79|     await request(app).patch(`/v1/orders/${b.id}`).send({ status: "pai…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  tests/orders.test.ts > order status lifecycle > rejects disallowed transitions with a 409 problem
+AssertionError: expected 404 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 404
+
+ ❯ tests/orders.test.ts:88:25
+     86|     const order = await create();
+     87|     const skip = await request(app).patch(`/v1/orders/${order.id}`).se…
+     88|     expect(skip.status).toBe(409);
+       |                         ^
+     89|     expect(skip.headers["content-type"]).toMatch(/application\/problem…
+     90|     expect(skip.body).toMatchObject({ status: 409, instance: `/v1/orde…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  tests/orders.test.ts > order status lifecycle > returns 422 problem for an invalid status
+AssertionError: expected 404 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 404
+
+ ❯ tests/orders.test.ts:107:24
+    105|     const order = await create();
+    106|     const res = await request(app).patch(`/v1/orders/${order.id}`).sen…
+    107|     expect(res.status).toBe(422);
+       |                        ^
+    108|     expect(res.headers["content-type"]).toMatch(/application\/problem\…
+    109|     const empty = await request(app).patch(`/v1/orders/${order.id}`).s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  tests/orders.test.ts > order status lifecycle > honours Idempotency-Key on PATCH
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/orders.test.ts:117:22
+    115|     const a = await request(app).patch(`/v1/orders/${order.id}`).set("…
+    116|     const b = await request(app).patch(`/v1/orders/${order.id}`).set("…
+    117|     expect(a.status).toBe(200);
+       |                      ^
+    118|     expect(b.status).toBe(200);
+    119|     expect(b.body).toEqual(a.body);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  tests/orders.test.ts > order status lifecycle > filters the collection by status
+AssertionError: expected [ { …(5) }, { …(5) } ] to have a length of 1 but got 2
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ tests/orders.test.ts:130:28
+    128|     const paid = await request(app).get("/v1/orders?status=paid");
+    129|     expect(paid.status).toBe(200);
+    130|     expect(paid.body.data).toHaveLength(1);
+       |                            ^
+    131|     expect(paid.body.data[0].id).toBe(a.id);
+    132|     const pending = await request(app).get("/v1/orders?status=pending"…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+

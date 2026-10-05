@@ -1,0 +1,11 @@
+
+ RUN  v5.0.3 /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/orders-status-claude/sample/orders-api
+
+ ✓ tests/orders.test.ts (13 tests) 43ms
+
+ Test Files  1 passed (1)
+      Tests  13 passed (13)
+   Start at  09:55:26
+   Duration  188ms (import 45%, tests 32%, transform 22%, worker 1%)
+
+JSON report written to /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/orders-status-claude/runs/orders-status-claude/logs/tests-4.json
