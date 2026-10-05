@@ -97,13 +97,13 @@ The task schema rejects unknown keys, so a task cannot name a model, provider or
 
 The drivers were routed through OpenRouter (`anthropic/claude-opus-5.5`, `openai/gpt-5.5`). Every number below comes from the run's own `runs/<runId>/summary.json` and `tokens/<runId>.json`, on branch `harness/<runId>`.
 
-| Run | Task | Driver | Turns | Standards | Tests | Token reduction (est.) |
-|---|---|---|---|---|---|---|
-| `users-api-claude-2` | greenfield | claude | 6 | 100% | 22/22 | 45.1% |
-| `users-api-openai` | greenfield | openai | 18 | 100% | 6/6 | 49.2% |
-| `orders-status-claude` | brownfield | claude | 6 | 100% (contract 10/10) | 13/13 | 59.0% |
-| `orders-status-openai` | brownfield | openai | 31 | 100% (contract 10/10) | 10/10 | 62.6% |
-| `users-api-claude` | greenfield | claude | 40 | 0% | — | 85.0% |
+| Run | Task | Driver | Turns | Standards | Tests | Token reduction (est.) | PR opened by `harness ship` |
+|---|---|---|---|---|---|---|---|
+| `users-api-claude-2` | greenfield | claude | 6 | 100% | 22/22 | 45.1% | [#1](https://github.com/Zeemal-Nadeem/ts-api-harness/pull/1) |
+| `users-api-openai` | greenfield | openai | 18 | 100% | 6/6 | 49.2% | [#2](https://github.com/Zeemal-Nadeem/ts-api-harness/pull/2) |
+| `orders-status-claude` | brownfield | claude | 6 | 100% (contract 10/10) | 13/13 | 59.0% | [#3](https://github.com/Zeemal-Nadeem/ts-api-harness/pull/3) |
+| `orders-status-openai` | brownfield | openai | 31 | 100% (contract 10/10) | 10/10 | 62.6% | [#4](https://github.com/Zeemal-Nadeem/ts-api-harness/pull/4) |
+| `users-api-claude` | greenfield | claude | 40 | 0% | — | 85.0% | not shippable (branch `harness/users-api-claude`) |
 
 `users-api-claude` is the failed first run. It hit a compaction bug: file reads were dropped after two rounds and the model looped. The gates held, the run was scored 0% and is not shippable. It is kept as evidence; the fix is in `core/context.ts` and covered by `npm test`.
 
