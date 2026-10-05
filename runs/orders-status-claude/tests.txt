@@ -1,0 +1,3 @@
+PASS 1 files, 13 tests
+  pass tests/orders.test.ts (13 tests)
+log: runs/orders-status-claude/logs/tests-4.txt
