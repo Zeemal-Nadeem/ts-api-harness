@@ -1,0 +1,238 @@
+{
+  "runId": "orders-status-openai",
+  "task": "orders-status",
+  "driver": "openai",
+  "model": "openai/gpt-5.5 (via OpenRouter)",
+  "mode": "actual",
+  "method": "Per turn, the harness serialises the exact request it sent (system+tools+messages) and, in shadow, the request a no-JIT/no-compaction harness would have sent for the same conversation (API source + all standards front-loaded, raw tool output, no compaction). Both columns use the same chars/4 estimator; providerInputTokens is the provider-reported usage for the request actually sent.",
+  "turns": [
+    {
+      "turn": 1,
+      "baselineInputTokens": 4983,
+      "actualInputTokens": 1130,
+      "providerInputTokens": 885,
+      "providerOutputTokens": 138
+    },
+    {
+      "turn": 2,
+      "baselineInputTokens": 6842,
+      "actualInputTokens": 3001,
+      "providerInputTokens": 3142,
+      "providerOutputTokens": 158
+    },
+    {
+      "turn": 3,
+      "baselineInputTokens": 8543,
+      "actualInputTokens": 4713,
+      "providerInputTokens": 5155,
+      "providerOutputTokens": 884
+    },
+    {
+      "turn": 4,
+      "baselineInputTokens": 9301,
+      "actualInputTokens": 4800,
+      "providerInputTokens": 5120,
+      "providerOutputTokens": 29
+    },
+    {
+      "turn": 5,
+      "baselineInputTokens": 10667,
+      "actualInputTokens": 5513,
+      "providerInputTokens": 6005,
+      "providerOutputTokens": 50
+    },
+    {
+      "turn": 6,
+      "baselineInputTokens": 11753,
+      "actualInputTokens": 5805,
+      "providerInputTokens": 6250,
+      "providerOutputTokens": 607
+    },
+    {
+      "turn": 7,
+      "baselineInputTokens": 12240,
+      "actualInputTokens": 5019,
+      "providerInputTokens": 5218,
+      "providerOutputTokens": 51
+    },
+    {
+      "turn": 8,
+      "baselineInputTokens": 13810,
+      "actualInputTokens": 6054,
+      "providerInputTokens": 6493,
+      "providerOutputTokens": 400
+    },
+    {
+      "turn": 9,
+      "baselineInputTokens": 14045,
+      "actualInputTokens": 6070,
+      "providerInputTokens": 6435,
+      "providerOutputTokens": 30
+    },
+    {
+      "turn": 10,
+      "baselineInputTokens": 14413,
+      "actualInputTokens": 6353,
+      "providerInputTokens": 6765,
+      "providerOutputTokens": 108
+    },
+    {
+      "turn": 11,
+      "baselineInputTokens": 14561,
+      "actualInputTokens": 6233,
+      "providerInputTokens": 6529,
+      "providerOutputTokens": 30
+    },
+    {
+      "turn": 12,
+      "baselineInputTokens": 14964,
+      "actualInputTokens": 6639,
+      "providerInputTokens": 7014,
+      "providerOutputTokens": 78
+    },
+    {
+      "turn": 13,
+      "baselineInputTokens": 15074,
+      "actualInputTokens": 6475,
+      "providerInputTokens": 6744,
+      "providerOutputTokens": 29
+    },
+    {
+      "turn": 14,
+      "baselineInputTokens": 15451,
+      "actualInputTokens": 6854,
+      "providerInputTokens": 7174,
+      "providerOutputTokens": 152
+    },
+    {
+      "turn": 15,
+      "baselineInputTokens": 15651,
+      "actualInputTokens": 6776,
+      "providerInputTokens": 6989,
+      "providerOutputTokens": 122
+    },
+    {
+      "turn": 16,
+      "baselineInputTokens": 15814,
+      "actualInputTokens": 6874,
+      "providerInputTokens": 7079,
+      "providerOutputTokens": 29
+    },
+    {
+      "turn": 17,
+      "baselineInputTokens": 16225,
+      "actualInputTokens": 6931,
+      "providerInputTokens": 7112,
+      "providerOutputTokens": 122
+    },
+    {
+      "turn": 18,
+      "baselineInputTokens": 16371,
+      "actualInputTokens": 5381,
+      "providerInputTokens": 5136,
+      "providerOutputTokens": 136
+    },
+    {
+      "turn": 19,
+      "baselineInputTokens": 16553,
+      "actualInputTokens": 5562,
+      "providerInputTokens": 5288,
+      "providerOutputTokens": 29
+    },
+    {
+      "turn": 20,
+      "baselineInputTokens": 17051,
+      "actualInputTokens": 5996,
+      "providerInputTokens": 5785,
+      "providerOutputTokens": 29
+    },
+    {
+      "turn": 21,
+      "baselineInputTokens": 17506,
+      "actualInputTokens": 6461,
+      "providerInputTokens": 6298,
+      "providerOutputTokens": 31
+    },
+    {
+      "turn": 22,
+      "baselineInputTokens": 17972,
+      "actualInputTokens": 6929,
+      "providerInputTokens": 6830,
+      "providerOutputTokens": 134
+    },
+    {
+      "turn": 23,
+      "baselineInputTokens": 18152,
+      "actualInputTokens": 5269,
+      "providerInputTokens": 4721,
+      "providerOutputTokens": 80
+    },
+    {
+      "turn": 24,
+      "baselineInputTokens": 18296,
+      "actualInputTokens": 5413,
+      "providerInputTokens": 4832,
+      "providerOutputTokens": 29
+    },
+    {
+      "turn": 25,
+      "baselineInputTokens": 18762,
+      "actualInputTokens": 5888,
+      "providerInputTokens": 5354,
+      "providerOutputTokens": 86
+    },
+    {
+      "turn": 26,
+      "baselineInputTokens": 18900,
+      "actualInputTokens": 5662,
+      "providerInputTokens": 5020,
+      "providerOutputTokens": 405
+    },
+    {
+      "turn": 27,
+      "baselineInputTokens": 19310,
+      "actualInputTokens": 5762,
+      "providerInputTokens": 5043,
+      "providerOutputTokens": 29
+    },
+    {
+      "turn": 28,
+      "baselineInputTokens": 19786,
+      "actualInputTokens": 5951,
+      "providerInputTokens": 5224,
+      "providerOutputTokens": 370
+    },
+    {
+      "turn": 29,
+      "baselineInputTokens": 20163,
+      "actualInputTokens": 5954,
+      "providerInputTokens": 5165,
+      "providerOutputTokens": 21
+    },
+    {
+      "turn": 30,
+      "baselineInputTokens": 20346,
+      "actualInputTokens": 5810,
+      "providerInputTokens": 4969,
+      "providerOutputTokens": 50
+    },
+    {
+      "turn": 31,
+      "baselineInputTokens": 20614,
+      "actualInputTokens": 5953,
+      "providerInputTokens": 5093,
+      "providerOutputTokens": 43
+    }
+  ],
+  "summary": {
+    "turns": 31,
+    "baselineInputTokens": 474119,
+    "actualInputTokens": 177231,
+    "reductionPct": 62.6,
+    "peakBaselineInputTokens": 20614,
+    "peakActualInputTokens": 6931,
+    "peakReductionPct": 66.4,
+    "providerInputTokens": 174867,
+    "providerOutputTokens": 4489
+  }
+}

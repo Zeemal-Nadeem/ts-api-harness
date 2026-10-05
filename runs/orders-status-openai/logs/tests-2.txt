@@ -1,0 +1,11 @@
+
+ RUN  v5.0.3 /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/orders-status-openai/sample/orders-api
+
+ ✓ tests/orders.test.ts (10 tests) 36ms
+
+ Test Files  1 passed (1)
+      Tests  10 passed (10)
+   Start at  09:55:46
+   Duration  174ms (import 47%, tests 29%, transform 23%, worker 1%)
+
+JSON report written to /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/orders-status-openai/runs/orders-status-openai/logs/tests-2.json

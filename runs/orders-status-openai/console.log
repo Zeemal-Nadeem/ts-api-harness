@@ -1,0 +1,61 @@
+run orders-status-openai  driver=openai model=openai/gpt-5.5 (via OpenRouter)  mode=actual
+workspace .harness/worktrees/orders-status-openai on harness/orders-status-openai
+turn 1: read_file tests/orders.test.ts -> tests/orders.test.ts (53 lines)
+turn 1: read_file src/routes/orders.ts -> src/routes/orders.ts (33 lines)
+turn 1: read_file src/schemas/orders.ts -> src/schemas/orders.ts (31 lines)
+turn 1: read_file src/store/orders.ts -> src/store/orders.ts (35 lines)
+turn 2: read_file src/lib/idempotency.ts -> src/lib/idempotency.ts (38 lines)
+turn 2: read_file src/lib/problem.ts -> src/lib/problem.ts (51 lines)
+turn 2: read_file src/app.ts -> src/app.ts (13 lines)
+turn 2: read_file src/lib/pagination.ts -> src/lib/pagination.ts (34 lines)
+turn 3: edit_file tests/orders.test.ts -> edited tests/orders.test.ts
+turn 4: read_file tests/orders.test.ts -> tests/orders.test.ts (91 lines)
+turn 5: run_tests tests/orders.test.ts -> FAIL 1/1 files, 5/9 tests failed
+turn 6: edit_file tests/orders.test.ts -> edited tests/orders.test.ts
+turn 7: read_file tests/orders.test.ts -> tests/orders.test.ts (105 lines)
+turn 8: edit_file src/schemas/orders.ts -> edited src/schemas/orders.ts
+turn 9: read_file src/schemas/orders.ts -> src/schemas/orders.ts (35 lines)
+turn 10: edit_file src/schemas/orders.ts -> edited src/schemas/orders.ts
+turn 11: read_file src/schemas/orders.ts -> src/schemas/orders.ts (40 lines)
+turn 12: edit_file src/store/orders.ts -> edited src/store/orders.ts
+turn 13: read_file src/store/orders.ts -> src/store/orders.ts (35 lines)
+turn 14: edit_file src/store/orders.ts -> edited src/store/orders.ts
+turn 15: edit_file src/store/orders.ts -> ERROR: `find` occurs 0 times in src/store/orders.ts; it must occur exactly once
+turn 16: read_file src/store/orders.ts -> src/store/orders.ts (36 lines)
+turn 17: edit_file src/store/orders.ts -> edited src/store/orders.ts
+turn 18: edit_file src/store/orders.ts -> edited src/store/orders.ts
+turn 19: read_file src/store/orders.ts -> src/store/orders.ts (45 lines)
+turn 20: read_file src/routes/orders.ts -> src/routes/orders.ts (33 lines)
+turn 21: read_file src/lib/idempotency.ts -> src/lib/idempotency.ts (38 lines)
+turn 22: edit_file src/routes/orders.ts -> edited src/routes/orders.ts
+turn 23: edit_file src/routes/orders.ts -> ERROR: `find` occurs 0 times in src/routes/orders.ts; it must occur exactly once
+turn 24: read_file src/routes/orders.ts -> src/routes/orders.ts (33 lines)
+turn 25: edit_file src/routes/orders.ts -> edited src/routes/orders.ts
+turn 26: edit_file src/routes/orders.ts -> ERROR: `find` occurs 0 times in src/routes/orders.ts; it must occur exactly once
+turn 27: read_file src/routes/orders.ts -> src/routes/orders.ts (33 lines)
+turn 28: edit_file src/routes/orders.ts -> edited src/routes/orders.ts
+turn 29: run_tests tests/orders.test.ts -> PASS 1 files, 10 tests
+turn 30: run_checks  -> contract-compat   pass      10/10 contract items
+turn 31: finish  -> accepted: Added order statuses, PATCH status transitions with idempotency support, status filtering on list, and tests covering lifecycle be
+
+contract-compat   pass      src/routes/orders.ts (4 ok)
+contract-compat   pass      src/schemas (6 ok)
+problem-json      pass      src/lib/problem.ts (1 ok)
+problem-json      pass      src/lib/idempotency.ts (1 ok)
+problem-json      pass      src/lib/pagination.ts (1 ok)
+problem-json      pass      src/routes/orders.ts (4 ok)
+problem-json      pass      runtime (6 ok)
+rest-conventions  pass      src/routes/orders.ts (5 ok)
+tsc-strict        pass      tsconfig.json (2 ok)
+tsc-strict        pass      tsc (1 ok)
+zod-boundary      pass      src/routes/orders.ts (5 ok)
+
+contract-compat   pass      10/10 contract items
+problem-json      pass      12/12 error paths
+rest-conventions  pass      5/5 routes
+tsc-strict        pass      0 errors
+zod-boundary      pass      5/5 handlers
+verdict           100%      → all required checks green
+tests             PASS 1 files, 10 tests
+tokens            actual 177231 vs baseline 474119 (est.) -> 62.6% reduction; peak 66.4%
+status            FINISHED — ready to ship: harness ship --run orders-status-openai

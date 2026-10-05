@@ -7,12 +7,16 @@ export const OrderItem = z.object({
   unitPriceCents: z.number().int().nonnegative(),
 });
 
+export const OrderStatus = z.enum(["pending", "paid", "shipped", "cancelled"]);
+export type OrderStatus = z.infer<typeof OrderStatus>;
+
 export const Order = z.object({
   id: z.uuid(),
   customerId: z.uuid(),
   items: z.array(OrderItem).min(1),
   totalCents: z.number().int().nonnegative(),
   createdAt: z.iso.datetime(),
+  status: OrderStatus,
 });
 export type Order = z.infer<typeof Order>;
 
@@ -23,8 +27,13 @@ export const CreateOrderBody = z.object({
 
 export const OrderParams = z.object({ id: z.uuid() });
 
+export const UpdateOrderStatusBody = z.object({
+  status: OrderStatus,
+});
+
 export const ListOrdersQuery = CursorQuery.extend({
   customerId: z.uuid().optional(),
+  status: OrderStatus.optional(),
 });
 
 export const OrderPage = pageOf(Order);

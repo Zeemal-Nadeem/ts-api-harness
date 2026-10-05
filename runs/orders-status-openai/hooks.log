@@ -1,0 +1,13 @@
+RECORD observed-red edit_file: src/schemas/orders.ts unlocked by observed red in tests/orders.test.ts
+RECORD observed-red edit_file: src/schemas/orders.ts unlocked by observed red in tests/orders.test.ts
+RECORD observed-red edit_file: src/store/orders.ts unlocked by observed red in tests/orders.test.ts
+RECORD observed-red edit_file: src/store/orders.ts unlocked by observed red in tests/orders.test.ts
+RECORD observed-red edit_file: src/store/orders.ts unlocked by observed red in tests/orders.test.ts
+RECORD observed-red edit_file: src/store/orders.ts unlocked by observed red in tests/orders.test.ts
+RECORD observed-red edit_file: src/store/orders.ts unlocked by observed red in tests/orders.test.ts
+RECORD observed-red edit_file: src/routes/orders.ts unlocked by observed red in tests/orders.test.ts
+RECORD observed-red edit_file: src/routes/orders.ts unlocked by observed red in tests/orders.test.ts
+RECORD observed-red edit_file: src/routes/orders.ts unlocked by observed red in tests/orders.test.ts
+RECORD observed-red edit_file: src/routes/orders.ts unlocked by observed red in tests/orders.test.ts
+RECORD observed-red edit_file: src/routes/orders.ts unlocked by observed red in tests/orders.test.ts
+RECORD finish-gate finish: gates green (standards 100%)
