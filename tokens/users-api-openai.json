@@ -1,0 +1,147 @@
+{
+  "runId": "users-api-openai",
+  "task": "users-api",
+  "driver": "openai",
+  "model": "openai/gpt-5.5 (via OpenRouter)",
+  "mode": "actual",
+  "method": "Per turn, the harness serialises the exact request it sent (system+tools+messages) and, in shadow, the request a no-JIT/no-compaction harness would have sent for the same conversation (API source + all standards front-loaded, raw tool output, no compaction). Both columns use the same chars/4 estimator; providerInputTokens is the provider-reported usage for the request actually sent.",
+  "turns": [
+    {
+      "turn": 1,
+      "baselineInputTokens": 3667,
+      "actualInputTokens": 1255,
+      "providerInputTokens": 1038,
+      "providerOutputTokens": 153
+    },
+    {
+      "turn": 2,
+      "baselineInputTokens": 5436,
+      "actualInputTokens": 3035,
+      "providerInputTokens": 3106,
+      "providerOutputTokens": 111
+    },
+    {
+      "turn": 3,
+      "baselineInputTokens": 6294,
+      "actualInputTokens": 3896,
+      "providerInputTokens": 3984,
+      "providerOutputTokens": 2185
+    },
+    {
+      "turn": 4,
+      "baselineInputTokens": 7948,
+      "actualInputTokens": 5531,
+      "providerInputTokens": 5843,
+      "providerOutputTokens": 21
+    },
+    {
+      "turn": 5,
+      "baselineInputTokens": 8272,
+      "actualInputTokens": 4095,
+      "providerInputTokens": 4132,
+      "providerOutputTokens": 102
+    },
+    {
+      "turn": 6,
+      "baselineInputTokens": 8352,
+      "actualInputTokens": 4181,
+      "providerInputTokens": 4192,
+      "providerOutputTokens": 501
+    },
+    {
+      "turn": 7,
+      "baselineInputTokens": 8791,
+      "actualInputTokens": 4572,
+      "providerInputTokens": 4648,
+      "providerOutputTokens": 494
+    },
+    {
+      "turn": 8,
+      "baselineInputTokens": 9299,
+      "actualInputTokens": 4717,
+      "providerInputTokens": 4706,
+      "providerOutputTokens": 667
+    },
+    {
+      "turn": 9,
+      "baselineInputTokens": 9916,
+      "actualInputTokens": 4920,
+      "providerInputTokens": 4944,
+      "providerOutputTokens": 21
+    },
+    {
+      "turn": 10,
+      "baselineInputTokens": 10458,
+      "actualInputTokens": 4516,
+      "providerInputTokens": 4414,
+      "providerOutputTokens": 47
+    },
+    {
+      "turn": 11,
+      "baselineInputTokens": 10543,
+      "actualInputTokens": 4607,
+      "providerInputTokens": 4483,
+      "providerOutputTokens": 141
+    },
+    {
+      "turn": 12,
+      "baselineInputTokens": 14212,
+      "actualInputTokens": 8264,
+      "providerInputTokens": 8867,
+      "providerOutputTokens": 131
+    },
+    {
+      "turn": 13,
+      "baselineInputTokens": 14754,
+      "actualInputTokens": 8391,
+      "providerInputTokens": 8969,
+      "providerOutputTokens": 135
+    },
+    {
+      "turn": 14,
+      "baselineInputTokens": 14836,
+      "actualInputTokens": 7857,
+      "providerInputTokens": 8245,
+      "providerOutputTokens": 29
+    },
+    {
+      "turn": 15,
+      "baselineInputTokens": 15544,
+      "actualInputTokens": 8545,
+      "providerInputTokens": 9068,
+      "providerOutputTokens": 49
+    },
+    {
+      "turn": 16,
+      "baselineInputTokens": 15640,
+      "actualInputTokens": 8031,
+      "providerInputTokens": 8361,
+      "providerOutputTokens": 21
+    },
+    {
+      "turn": 17,
+      "baselineInputTokens": 15819,
+      "actualInputTokens": 6731,
+      "providerInputTokens": 6694,
+      "providerOutputTokens": 14
+    },
+    {
+      "turn": 18,
+      "baselineInputTokens": 16073,
+      "actualInputTokens": 6326,
+      "providerInputTokens": 6178,
+      "providerOutputTokens": 86
+    }
+  ],
+  "summary": {
+    "turns": 18,
+    "baselineInputTokens": 195854,
+    "actualInputTokens": 99470,
+    "reductionPct": 49.2,
+    "peakBaselineInputTokens": 16073,
+    "peakActualInputTokens": 8545,
+    "peakReductionPct": 46.8,
+    "providerInputTokens": 101872,
+    "providerOutputTokens": 4908
+  }
+}

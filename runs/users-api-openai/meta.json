@@ -1,0 +1,42 @@
+{
+  "runId": "users-api-openai",
+  "task": "users-api",
+  "mode": "greenfield",
+  "driver": "openai",
+  "model": "openai/gpt-5.5 (via OpenRouter)",
+  "baseline": false,
+  "branch": "harness/users-api-openai",
+  "baseRef": "8f8b65f694b52f7fa1e31a8d2e11857d078119ca",
+  "target": "generated/users-api",
+  "taskSpec": {
+    "name": "users-api",
+    "mode": "greenfield",
+    "target": "generated/users-api",
+    "brief": "Build a Users REST API. The scaffold (problem+json errors, cursor pagination,\nidempotency middleware, app wiring) is in place; implement the users resource:\nZod schemas in src/schemas/users.ts, an in-memory store in src/store/users.ts,\nthe router in src/routes/users.ts, and Vitest + supertest tests in tests/users.test.ts.\n",
+    "resource": {
+      "name": "users",
+      "fields": {
+        "id": "uuid, server-generated, read-only",
+        "email": "valid email, required, unique (case-insensitive)",
+        "name": "string 1-100 chars, required",
+        "role": "one of admin | member | viewer, default member",
+        "createdAt": "ISO-8601 datetime, server-generated",
+        "updatedAt": "ISO-8601 datetime, server-generated"
+      }
+    },
+    "behaviours": [
+      "POST /v1/users creates a user -> 201; duplicate email -> 409 problem; invalid body -> 422 problem",
+      "GET /v1/users lists users with cursor pagination (limit 1-100, default 20) and optional role filter",
+      "GET /v1/users/:id returns a user -> 200; unknown id -> 404 problem; malformed id -> 422 problem",
+      "PATCH /v1/users/:id partially updates name/role/email -> 200; email clash -> 409",
+      "DELETE /v1/users/:id -> 204; unknown id -> 404 problem",
+      "POST and PATCH honour Idempotency-Key (same key + same body replays the first response)"
+    ],
+    "testMap": {
+      "src/**": "tests/users.test.ts"
+    },
+    "allowBreaking": false,
+    "maxTurns": 40
+  },
+  "startedAt": "2026-10-05T04:54:22.862Z"
+}

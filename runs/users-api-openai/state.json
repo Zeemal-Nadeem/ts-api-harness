@@ -1,0 +1,258 @@
+{
+  "runId": "users-api-openai",
+  "observedRed": {
+    "tests/users.test.ts": "db00ec5a32853a04"
+  },
+  "observedGreen": {
+    "tests/users.test.ts": "db00ec5a32853a04"
+  },
+  "writes": [
+    "tests/users.test.ts",
+    "src/schemas/users.ts",
+    "src/store/users.ts",
+    "src/routes/users.ts",
+    "src/routes/users.ts",
+    "src/routes/users.ts"
+  ],
+  "finished": true,
+  "lastTests": {
+    "ok": true,
+    "failed": [],
+    "passed": [
+      "tests/users.test.ts"
+    ]
+  },
+  "lastStandards": {
+    "verdict": 100,
+    "ok": true,
+    "results": [
+      {
+        "id": "contract-compat",
+        "category": "contract",
+        "required": true,
+        "result": {
+          "status": "n/a",
+          "passed": 0,
+          "total": 0,
+          "unit": "contract items",
+          "findings": [],
+          "detail": "no pre-change baseline (greenfield or standalone check)"
+        }
+      },
+      {
+        "id": "problem-json",
+        "category": "standard",
+        "required": true,
+        "result": {
+          "status": "pass",
+          "passed": 13,
+          "total": 13,
+          "unit": "error paths",
+          "findings": [
+            {
+              "file": "src/lib/problem.ts",
+              "line": 1,
+              "ok": true,
+              "message": "problem+json emitter"
+            },
+            {
+              "file": "src/lib/idempotency.ts",
+              "line": 21,
+              "ok": true,
+              "message": "problem 409"
+            },
+            {
+              "file": "src/lib/pagination.ts",
+              "line": 26,
+              "ok": true,
+              "message": "problem 422"
+            },
+            {
+              "file": "src/routes/users.ts",
+              "line": 20,
+              "ok": true,
+              "message": "problem 409"
+            },
+            {
+              "file": "src/routes/users.ts",
+              "line": 37,
+              "ok": true,
+              "message": "problem 404"
+            },
+            {
+              "file": "src/routes/users.ts",
+              "line": 47,
+              "ok": true,
+              "message": "problem 404"
+            },
+            {
+              "file": "src/routes/users.ts",
+              "line": 50,
+              "ok": true,
+              "message": "problem 409"
+            },
+            {
+              "file": "src/routes/users.ts",
+              "line": 59,
+              "ok": true,
+              "message": "problem 404"
+            },
+            {
+              "file": "runtime",
+              "line": 0,
+              "ok": true,
+              "message": "unknown route"
+            },
+            {
+              "file": "runtime",
+              "line": 0,
+              "ok": true,
+              "message": "POST /v1/users invalid body"
+            },
+            {
+              "file": "runtime",
+              "line": 0,
+              "ok": true,
+              "message": "GET /v1/users invalid limit"
+            },
+            {
+              "file": "runtime",
+              "line": 0,
+              "ok": true,
+              "message": "GET /v1/users/:id unknown id"
+            },
+            {
+              "file": "runtime",
+              "line": 0,
+              "ok": true,
+              "message": "PATCH /v1/users/:id invalid body"
+            },
+            {
+              "file": "runtime",
+              "line": 0,
+              "ok": true,
+              "message": "DELETE /v1/users/:id unknown id"
+            }
+          ]
+        }
+      },
+      {
+        "id": "rest-conventions",
+        "category": "standard",
+        "required": true,
+        "result": {
+          "status": "pass",
+          "passed": 5,
+          "total": 5,
+          "unit": "routes",
+          "findings": [
+            {
+              "file": "src/routes/users.ts",
+              "line": 17,
+              "ok": true,
+              "message": "POST /v1/users"
+            },
+            {
+              "file": "src/routes/users.ts",
+              "line": 26,
+              "ok": true,
+              "message": "GET /v1/users"
+            },
+            {
+              "file": "src/routes/users.ts",
+              "line": 33,
+              "ok": true,
+              "message": "GET /v1/users/:id"
+            },
+            {
+              "file": "src/routes/users.ts",
+              "line": 42,
+              "ok": true,
+              "message": "PATCH /v1/users/:id"
+            },
+            {
+              "file": "src/routes/users.ts",
+              "line": 56,
+              "ok": true,
+              "message": "DELETE /v1/users/:id"
+            }
+          ]
+        }
+      },
+      {
+        "id": "tsc-strict",
+        "category": "standard",
+        "required": true,
+        "result": {
+          "status": "pass",
+          "passed": 0,
+          "total": 0,
+          "unit": "errors",
+          "findings": [
+            {
+              "file": "tsconfig.json",
+              "line": 1,
+              "ok": true,
+              "message": "strict: true"
+            },
+            {
+              "file": "tsconfig.json",
+              "line": 1,
+              "ok": true,
+              "message": "noUncheckedIndexedAccess: true"
+            },
+            {
+              "file": "tsc",
+              "line": 0,
+              "ok": true,
+              "message": "0 errors"
+            }
+          ]
+        }
+      },
+      {
+        "id": "zod-boundary",
+        "category": "standard",
+        "required": true,
+        "result": {
+          "status": "pass",
+          "passed": 5,
+          "total": 5,
+          "unit": "handlers",
+          "findings": [
+            {
+              "file": "src/routes/users.ts",
+              "line": 17,
+              "ok": true,
+              "message": "POST /v1/users"
+            },
+            {
+              "file": "src/routes/users.ts",
+              "line": 26,
+              "ok": true,
+              "message": "GET /v1/users"
+            },
+            {
+              "file": "src/routes/users.ts",
+              "line": 33,
+              "ok": true,
+              "message": "GET /v1/users/:id"
+            },
+            {
+              "file": "src/routes/users.ts",
+              "line": 42,
+              "ok": true,
+              "message": "PATCH /v1/users/:id"
+            },
+            {
+              "file": "src/routes/users.ts",
+              "line": 56,
+              "ok": true,
+              "message": "DELETE /v1/users/:id"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

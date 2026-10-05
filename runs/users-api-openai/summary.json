@@ -1,0 +1,34 @@
+{
+  "runId": "users-api-openai",
+  "status": "FINISHED",
+  "ok": true,
+  "standards": {
+    "verdict": 100,
+    "ok": true
+  },
+  "tests": "PASS",
+  "observedRed": [
+    "tests/users.test.ts"
+  ],
+  "writes": [
+    "tests/users.test.ts",
+    "src/schemas/users.ts",
+    "src/store/users.ts",
+    "src/routes/users.ts",
+    "src/routes/users.ts",
+    "src/routes/users.ts"
+  ],
+  "tokens": {
+    "turns": 18,
+    "baselineInputTokens": 195854,
+    "actualInputTokens": 99470,
+    "reductionPct": 49.2,
+    "peakBaselineInputTokens": 16073,
+    "peakActualInputTokens": 8545,
+    "peakReductionPct": 46.8,
+    "providerInputTokens": 101872,
+    "providerOutputTokens": 4908
+  },
+  "branch": "harness/users-api-openai",
+  "worktree": ".harness/worktrees/users-api-openai"
+}

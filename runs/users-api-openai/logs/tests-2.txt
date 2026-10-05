@@ -1,0 +1,39 @@
+
+ RUN  v5.0.3 /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/users-api-openai/generated/users-api
+
+ ❯ tests/users.test.ts (6 tests | 1 failed) 36ms
+   ❯ users API (6)
+     ✓ creates a user with defaults and rejects duplicate emails case-insensitively 17ms
+     ✓ returns 422 problem details for invalid create bodies 2ms
+     × lists users with role filtering and cursor pagination 5ms
+     ✓ gets users by id and reports malformed or unknown ids 5ms
+     ✓ patches users, detects email clashes, and deletes users 4ms
+     ✓ honours Idempotency-Key for POST and PATCH 2ms
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  09:55:02
+   Duration  182ms (import 48%, tests 28%, transform 23%, worker 1%)
+
+JSON report written to /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/users-api-openai/runs/users-api-openai/logs/tests-2.json
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/users.test.ts > users API > lists users with role filtering and cursor pagination
+Error: expected 200 "OK", got 500 "Internal Server Error"
+ ❯ tests/users.test.ts:70:67
+     68|       .expect(201);
+     69|
+     70|     const firstPage = await request(app).get("/v1/users?limit=1").expe…
+       |                                                                   ^
+     71|     expect(firstPage.body).toMatchObject({
+     72|       data: [admin.body],
+ ❯ Test._assertStatus ../../../../../node_modules/supertest/lib/test.js:404:14
+ ❯ ../../../../../node_modules/supertest/lib/test.js:460:13
+ ❯ Test._assertFunction ../../../../../node_modules/supertest/lib/test.js:437:13
+ ❯ Test.assert ../../../../../node_modules/supertest/lib/test.js:302:23
+ ❯ localAssert ../../../../../node_modules/supertest/lib/test.js:220:38
+ ❯ Server.<anonymous> ../../../../../node_modules/supertest/lib/test.js:227:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

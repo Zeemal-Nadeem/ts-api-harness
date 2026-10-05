@@ -1,0 +1,3 @@
+PASS 1 files, 6 tests
+  pass tests/users.test.ts (6 tests)
+log: runs/users-api-openai/logs/tests-6.txt
