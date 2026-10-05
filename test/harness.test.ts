@@ -9,7 +9,7 @@ import { runStandards } from "../core/standards.ts";
 import { runTask } from "../core/engine.ts";
 import { git } from "../core/workspace.ts";
 import type { Registry } from "../core/types.ts";
-import { ordersBreakingScript, ordersStatusScript } from "./scripts.ts";
+import { ordersBreakingScript, ordersStatusScript, usersScript } from "./scripts.ts";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const tmp = mkdtempSync(join(tmpdir(), "harness-test-"));
@@ -32,13 +32,13 @@ afterAll(() => {
   rmSync(tmp, { recursive: true, force: true });
 });
 
-async function replay(script: unknown, id: string) {
+async function replay(script: unknown, id: string, task = "tasks/orders-status.yaml") {
   const file = join(tmp, `${id}.json`);
   writeFileSync(file, JSON.stringify(script));
   process.env.HARNESS_REPLAY_SCRIPT = file;
   const runId = `test-${id}-${Date.now()}`;
   runIds.push(runId);
-  return runTask({ harnessRoot: ROOT, registry, taskFile: join(ROOT, "tasks/orders-status.yaml"), driverId: "replay", baseline: false, runId, quiet: true });
+  return runTask({ harnessRoot: ROOT, registry, taskFile: join(ROOT, task), driverId: "replay", baseline: false, runId, quiet: true });
 }
 
 describe("standards checks", () => {
@@ -65,6 +65,15 @@ describe("standards checks", () => {
     expect(msgs.some((m) => /rest-conventions .*not under a versioned base/.test(m))).toBe(true);
     expect(rep.verdict).toBe(0);
   });
+});
+
+describe("governed greenfield run (replay)", () => {
+  it("scaffolds, gates test-first, and finishes green", async () => {
+    const r = await replay(usersScript(), "users", "tasks/users-api.yaml");
+    expect(r.status).toBe("FINISHED");
+    expect(r.ok).toBe(true);
+    expect(existsSync(join(r.worktree, "generated/users-api/src/routes/users.ts"))).toBe(true);
+  }, 120_000);
 });
 
 describe("governed brownfield run (replay)", () => {

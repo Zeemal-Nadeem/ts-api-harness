@@ -18,12 +18,12 @@ resource:
     createdAt: ISO-8601 datetime, server-generated
     updatedAt: ISO-8601 datetime, server-generated
 behaviours:
-  - POST /v1/users creates a user -> 201; duplicate email -> 409 problem; invalid body -> 422 problem
-  - GET /v1/users lists users with cursor pagination (limit 1-100, default 20) and optional role filter
-  - GET /v1/users/:id returns a user -> 200; unknown id -> 404 problem; malformed id -> 422 problem
-  - PATCH /v1/users/:id partially updates name/role/email -> 200; email clash -> 409
-  - DELETE /v1/users/:id -> 204; unknown id -> 404 problem
-  - POST and PATCH honour Idempotency-Key (same key + same body replays the first response)
+  - "POST /v1/users creates a user -> 201; duplicate email -> 409 problem; invalid body -> 422 problem"
+  - "GET /v1/users lists users with cursor pagination (limit 1-100, default 20) and optional role filter"
+  - "GET /v1/users/:id returns a user -> 200; unknown id -> 404 problem; malformed id -> 422 problem"
+  - "PATCH /v1/users/:id partially updates name/role/email -> 200; email clash -> 409"
+  - "DELETE /v1/users/:id -> 204; unknown id -> 404 problem"
+  - "POST and PATCH honour Idempotency-Key (same key + same body replays the first response)"
 testMap:
   "src/**": tests/users.test.ts
 maxTurns: 40

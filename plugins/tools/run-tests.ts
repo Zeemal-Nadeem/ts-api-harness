@@ -14,7 +14,7 @@ interface VitestJson {
     name: string;
     status: string;
     message?: string;
-    assertionResults: { fullName: string; status: string; failureMessages: string[] }[];
+    assertionResults: { fullName: string; title?: string; status: string; failureMessages: string[] }[];
   }[];
 }
 
@@ -40,6 +40,7 @@ const runTests: ToolPlugin<{ file?: string | undefined }> = {
     if (rep.testResults.length === 0) return { content: `UNPROVEN: no test files found (log: ${logPath})`, raw, summary: "run_tests: no test files" };
 
     const lines: string[] = [];
+    const failedNames: string[] = [];
     const passed: string[] = [];
     const failed: string[] = [];
     for (const t of rep.testResults) {
@@ -55,6 +56,7 @@ const runTests: ToolPlugin<{ file?: string | undefined }> = {
         failed.push(rel);
         ctx.state.observedRed[rel] = contentSha;
         if (bad.length === 0) lines.push(`  FAIL ${rel}: ${(t.message ?? "suite failed to load").split("\n")[0]?.slice(0, 200)}`);
+        failedNames.push(...bad.map((a) => a.title ?? a.fullName));
         for (const a of bad.slice(0, 6)) {
           const msg = stripAnsi(a.failureMessages[0] ?? "").split("\n")[0]?.slice(0, 180) ?? "";
           lines.push(`  FAIL ${rel} › ${a.fullName}: ${msg}`);
@@ -69,7 +71,7 @@ const runTests: ToolPlugin<{ file?: string | undefined }> = {
     return {
       content: `${head}\n${lines.join("\n")}\nlog: ${logPath}`,
       raw,
-      summary: `run_tests${file ? ` ${file}` : ""}: ${head}`,
+      summary: `run_tests${file ? ` ${file}` : ""}: ${head}${failedNames.length ? ` — ${failedNames.join("; ").slice(0, 200)}` : ""}`,
     };
   },
 };

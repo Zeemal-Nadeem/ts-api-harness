@@ -10,7 +10,7 @@ import { walk } from "./api-model.ts";
 import type { Message, Registry, Task, ToolCall } from "./types.ts";
 
 export const KEEP_ROUNDS = 2;
-export const COMPACT_STEP = 4;
+export const COMPACT_STEP = 1;
 
 export type Entry =
   | { kind: "user"; text: string }
@@ -91,13 +91,15 @@ function elideArgs(call: ToolCall): ToolCall {
 export function render(history: Entry[], mode: "actual" | "baseline"): Message[] {
   const rounds = history.filter((e) => e.kind === "tool").length;
   const boundary = mode === "baseline" ? 0 : Math.max(0, Math.floor((rounds - KEEP_ROUNDS) / COMPACT_STEP) * COMPACT_STEP);
+  // Large write arguments are already on disk; only the latest assistant turn keeps them verbatim.
+  const lastAssistant = history.map((e) => e.kind).lastIndexOf("assistant");
   let seen = 0;
   const out: Message[] = [];
-  for (const e of history) {
+  history.forEach((e, i) => {
     if (e.kind === "user") out.push({ role: "user", text: e.text });
     else if (e.kind === "assistant") {
-      const old = seen < boundary;
-      out.push({ role: "assistant", text: e.text, calls: old ? e.calls.map(elideArgs) : e.calls, opaque: e.opaque });
+      const elide = mode === "actual" && i !== lastAssistant;
+      out.push({ role: "assistant", text: e.text, calls: elide ? e.calls.map(elideArgs) : e.calls, opaque: e.opaque });
     } else {
       const old = seen < boundary;
       seen++;
@@ -110,6 +112,6 @@ export function render(history: Entry[], mode: "actual" | "baseline"): Message[]
         })),
       });
     }
-  }
+  });
   return out;
 }
