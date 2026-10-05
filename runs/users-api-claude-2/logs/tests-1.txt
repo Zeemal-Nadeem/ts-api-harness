@@ -1,0 +1,27 @@
+
+ RUN  v5.0.3 /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/users-api-claude-2/generated/users-api
+
+ ❯ tests/users.test.ts (0 test)
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  09:53:34
+   Duration  233ms (worker 97%, environment 3%)
+
+JSON report written to /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/users-api-claude-2/runs/users-api-claude-2/logs/tests-1.json
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/users.test.ts [ tests/users.test.ts ]
+Error: Cannot find module './routes/users.ts' imported from /Users/zeemalnadeem/Documents/Assignment/ts-api-harness/.harness/worktrees/users-api-claude-2/generated/users-api/src/app.ts
+ ❯ src/app.ts:3:1
+      1| import express from "express";
+      2| import { notFound, problemHandler } from "./lib/problem.ts";
+      3| import { usersRouter } from "./routes/users.ts";
+       | ^
+      4|
+      5| export function createApp(): express.Express {
+ ❯ tests/users.test.ts:3:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

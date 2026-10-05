@@ -1,0 +1,32 @@
+{
+  "runId": "users-api-claude-2",
+  "status": "FINISHED",
+  "ok": true,
+  "standards": {
+    "verdict": 100,
+    "ok": true
+  },
+  "tests": "PASS",
+  "observedRed": [
+    "tests/users.test.ts"
+  ],
+  "writes": [
+    "tests/users.test.ts",
+    "src/schemas/users.ts",
+    "src/store/users.ts",
+    "src/routes/users.ts"
+  ],
+  "tokens": {
+    "turns": 6,
+    "baselineInputTokens": 46987,
+    "actualInputTokens": 25805,
+    "reductionPct": 45.1,
+    "peakBaselineInputTokens": 11144,
+    "peakActualInputTokens": 6692,
+    "peakReductionPct": 39.9,
+    "providerInputTokens": 43459,
+    "providerOutputTokens": 7202
+  },
+  "branch": "harness/users-api-claude-2",
+  "worktree": ".harness/worktrees/users-api-claude-2"
+}

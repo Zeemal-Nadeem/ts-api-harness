@@ -1,0 +1,215 @@
+{
+  "verdict": 100,
+  "ok": true,
+  "results": [
+    {
+      "id": "contract-compat",
+      "category": "contract",
+      "required": true,
+      "result": {
+        "status": "n/a",
+        "passed": 0,
+        "total": 0,
+        "unit": "contract items",
+        "findings": [],
+        "detail": "no pre-change baseline (greenfield or standalone check)"
+      }
+    },
+    {
+      "id": "problem-json",
+      "category": "standard",
+      "required": true,
+      "result": {
+        "status": "pass",
+        "passed": 10,
+        "total": 10,
+        "unit": "error paths",
+        "findings": [
+          {
+            "file": "src/lib/problem.ts",
+            "line": 1,
+            "ok": true,
+            "message": "problem+json emitter"
+          },
+          {
+            "file": "src/lib/idempotency.ts",
+            "line": 21,
+            "ok": true,
+            "message": "problem 409"
+          },
+          {
+            "file": "src/lib/pagination.ts",
+            "line": 26,
+            "ok": true,
+            "message": "problem 422"
+          },
+          {
+            "file": "src/routes/users.ts",
+            "line": 10,
+            "ok": true,
+            "message": "problem 404"
+          },
+          {
+            "file": "src/store/users.ts",
+            "line": 17,
+            "ok": true,
+            "message": "problem 409"
+          },
+          {
+            "file": "runtime",
+            "line": 0,
+            "ok": true,
+            "message": "unknown route"
+          },
+          {
+            "file": "runtime",
+            "line": 0,
+            "ok": true,
+            "message": "POST /v1/users invalid body"
+          },
+          {
+            "file": "runtime",
+            "line": 0,
+            "ok": true,
+            "message": "GET /v1/users invalid limit"
+          },
+          {
+            "file": "runtime",
+            "line": 0,
+            "ok": true,
+            "message": "GET /v1/users/:id unknown id"
+          },
+          {
+            "file": "runtime",
+            "line": 0,
+            "ok": true,
+            "message": "PATCH /v1/users/:id invalid body"
+          },
+          {
+            "file": "runtime",
+            "line": 0,
+            "ok": true,
+            "message": "DELETE /v1/users/:id unknown id"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rest-conventions",
+      "category": "standard",
+      "required": true,
+      "result": {
+        "status": "pass",
+        "passed": 5,
+        "total": 5,
+        "unit": "routes",
+        "findings": [
+          {
+            "file": "src/routes/users.ts",
+            "line": 12,
+            "ok": true,
+            "message": "POST /v1/users"
+          },
+          {
+            "file": "src/routes/users.ts",
+            "line": 18,
+            "ok": true,
+            "message": "GET /v1/users"
+          },
+          {
+            "file": "src/routes/users.ts",
+            "line": 24,
+            "ok": true,
+            "message": "GET /v1/users/:id"
+          },
+          {
+            "file": "src/routes/users.ts",
+            "line": 31,
+            "ok": true,
+            "message": "PATCH /v1/users/:id"
+          },
+          {
+            "file": "src/routes/users.ts",
+            "line": 39,
+            "ok": true,
+            "message": "DELETE /v1/users/:id"
+          }
+        ]
+      }
+    },
+    {
+      "id": "tsc-strict",
+      "category": "standard",
+      "required": true,
+      "result": {
+        "status": "pass",
+        "passed": 0,
+        "total": 0,
+        "unit": "errors",
+        "findings": [
+          {
+            "file": "tsconfig.json",
+            "line": 1,
+            "ok": true,
+            "message": "strict: true"
+          },
+          {
+            "file": "tsconfig.json",
+            "line": 1,
+            "ok": true,
+            "message": "noUncheckedIndexedAccess: true"
+          },
+          {
+            "file": "tsc",
+            "line": 0,
+            "ok": true,
+            "message": "0 errors"
+          }
+        ]
+      }
+    },
+    {
+      "id": "zod-boundary",
+      "category": "standard",
+      "required": true,
+      "result": {
+        "status": "pass",
+        "passed": 5,
+        "total": 5,
+        "unit": "handlers",
+        "findings": [
+          {
+            "file": "src/routes/users.ts",
+            "line": 12,
+            "ok": true,
+            "message": "POST /v1/users"
+          },
+          {
+            "file": "src/routes/users.ts",
+            "line": 18,
+            "ok": true,
+            "message": "GET /v1/users"
+          },
+          {
+            "file": "src/routes/users.ts",
+            "line": 24,
+            "ok": true,
+            "message": "GET /v1/users/:id"
+          },
+          {
+            "file": "src/routes/users.ts",
+            "line": 31,
+            "ok": true,
+            "message": "PATCH /v1/users/:id"
+          },
+          {
+            "file": "src/routes/users.ts",
+            "line": 39,
+            "ok": true,
+            "message": "DELETE /v1/users/:id"
+          }
+        ]
+      }
+    }
+  ]
+}
