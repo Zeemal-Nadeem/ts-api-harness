@@ -1,4 +1,5 @@
-// Claude driver: translates neutral messages/tools to the Messages API and back.
+// Claude driver: translates neutral messages/tools to the Messages API and back
+// (native, ANTHROPIC_API_KEY) or to Chat Completions via OpenRouter (OPENROUTER_API_KEY).
 // Everything provider-specific (wire format, reasoning blocks, fallbacks,
 // usage accounting) stays in this file.
 //
@@ -7,6 +8,7 @@
 // turn's thinking and sends prefix_mismatch_behavior "drop_block" so a stale
 // block degrades instead of failing the request.
 import Anthropic from "@anthropic-ai/sdk";
+import { chatTurn, openRouterClient, openRouterKey } from "./_chat-completions.ts";
 import type { Driver, DriverPlugin, Message, ToolCall, TurnRequest, TurnResult } from "../core/types.ts";
 
 type Block = Anthropic.Beta.Messages.BetaContentBlockParam;
@@ -35,6 +37,14 @@ function toWire(messages: Message[]): Anthropic.Beta.Messages.BetaMessageParam[]
 }
 
 function create(): Driver {
+  // Without a native key, route through OpenRouter's Chat Completions endpoint.
+  // That path has no reasoning-block replay or server-side fallbacks.
+  const router = !process.env.ANTHROPIC_API_KEY ? openRouterKey() : undefined;
+  if (router) {
+    const model = process.env.HARNESS_CLAUDE_OPENROUTER_MODEL ?? "anthropic/claude-opus-5.5";
+    const client = openRouterClient(router);
+    return { id: "claude", model: `${model} (via OpenRouter)`, turn: (req) => chatTurn(client, model, req, { maxTokensField: "max_tokens" }) };
+  }
   const model = process.env.HARNESS_CLAUDE_MODEL ?? "claude-opus-5-5";
   const effort = (process.env.HARNESS_CLAUDE_EFFORT ?? "high") as Effort;
   const client = new Anthropic();

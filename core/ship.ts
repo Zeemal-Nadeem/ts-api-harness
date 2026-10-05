@@ -10,7 +10,7 @@ import { git, worktreePath } from "./workspace.ts";
 import type { Registry, RunState, Task, ToolContext } from "./types.ts";
 
 const PROTECTED = /^(main|master|develop|trunk|production|release\/.*)$/;
-const SECRET = /(sk-ant-[A-Za-z0-9_-]{10,}|sk-(proj-)?[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----|ghp_[A-Za-z0-9]{30,}|gho_[A-Za-z0-9]{30,})/;
+const SECRET = /(sk-ant-[A-Za-z0-9_-]{10,}|sk-or-[A-Za-z0-9_-]{20,}|sk-(proj-)?[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}|-----BEGIN [A-Z ]*PRIVATE KEY-----|ghp_[A-Za-z0-9]{30,}|gho_[A-Za-z0-9]{30,})/;
 
 export interface ShipOptions {
   harnessRoot: string;

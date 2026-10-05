@@ -7,6 +7,7 @@
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { existsSync, readFileSync } from "node:fs";
+import { loadEnvFile } from "./env.ts";
 import { parseArgs } from "node:util";
 import { loadRegistry } from "./registry.ts";
 import { renderStandards, runStandards } from "./standards.ts";
@@ -15,6 +16,7 @@ const HARNESS_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 async function main(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
+  loadEnvFile(process.env.HARNESS_ENV_FILE ? resolve(process.cwd(), process.env.HARNESS_ENV_FILE) : join(HARNESS_ROOT, ".env"));
   const registry = await loadRegistry(HARNESS_ROOT);
 
   switch (command) {
