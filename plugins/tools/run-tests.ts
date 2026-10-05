@@ -69,7 +69,7 @@ const runTests: ToolPlugin<{ file?: string | undefined }> = {
       ? `PASS ${passed.length} files, ${rep.numTotalTests} tests`
       : `FAIL ${failed.length}/${rep.testResults.length} files, ${rep.numFailedTests}/${rep.numTotalTests} tests failed`;
     return {
-      content: `${head}\n${lines.join("\n")}\nlog: ${logPath}`,
+      content: `${head}\n${lines.join("\n")}\n(full log kept for reviewers: ${logPath})`,
       raw,
       summary: `run_tests${file ? ` ${file}` : ""}: ${head}${failedNames.length ? ` — ${failedNames.join("; ").slice(0, 200)}` : ""}`,
     };

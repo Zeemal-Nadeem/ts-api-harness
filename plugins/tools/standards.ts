@@ -19,7 +19,7 @@ const runChecks: ToolPlugin<Record<string, never>> = {
     const tscLog = join(ctx.runDir, "tsc.log");
     const fails = renderFailures(rep);
     return {
-      content: [...renderSummary(rep), ...(fails.length ? ["failures:", ...fails] : []), `log: ${log}`].join("\n"),
+      content: [...renderSummary(rep), ...(fails.length ? ["failures:", ...fails] : []), `(full report kept for reviewers: ${log})`].join("\n"),
       raw: full + (existsSync(tscLog) ? `\n\n${readFileSync(tscLog, "utf8")}` : ""),
       summary: `run_checks: verdict ${rep.verdict}%`,
     };
