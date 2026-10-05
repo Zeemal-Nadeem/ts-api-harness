@@ -1,0 +1,9 @@
+{
+  "name": "__RESOURCE__-api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/server.ts",
+    "test": "vitest run"
+  }
+}

@@ -1,0 +1,15 @@
+# Brownfield task: change the existing sample Orders API without breaking its contract.
+name: orders-status
+mode: brownfield
+target: sample/orders-api
+brief: |
+  Orders need a lifecycle. Add a `status` to orders and an endpoint to move an
+  order through it, following the conventions already in sample/orders-api.
+  Existing clients must keep working: do not remove or rename fields or routes.
+behaviours:
+  - Every order has status: pending | paid | shipped | cancelled; new orders start as pending
+  - PATCH /v1/orders/:id with body { status } transitions the order -> 200 with the updated order
+  - Allowed transitions: pending->paid, pending->cancelled, paid->shipped, paid->cancelled; anything else -> 409 problem
+  - PATCH honours Idempotency-Key; unknown id -> 404 problem; invalid status -> 422 problem
+  - GET /v1/orders accepts an optional status filter
+maxTurns: 40

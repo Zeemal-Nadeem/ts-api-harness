@@ -1,0 +1,4 @@
+#!/bin/sh
+# Entry point: ./bin/harness <command> [...]
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$ROOT" && exec node --import tsx core/cli.ts "$@"

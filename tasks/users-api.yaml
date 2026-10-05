@@ -1,0 +1,29 @@
+# Greenfield task: a new Users API generated from scratch.
+# Provider-neutral by construction: the task schema rejects unknown keys.
+name: users-api
+mode: greenfield
+target: generated/users-api
+brief: |
+  Build a Users REST API. The scaffold (problem+json errors, cursor pagination,
+  idempotency middleware, app wiring) is in place; implement the users resource:
+  Zod schemas in src/schemas/users.ts, an in-memory store in src/store/users.ts,
+  the router in src/routes/users.ts, and Vitest + supertest tests in tests/users.test.ts.
+resource:
+  name: users
+  fields:
+    id: uuid, server-generated, read-only
+    email: valid email, required, unique (case-insensitive)
+    name: string 1-100 chars, required
+    role: one of admin | member | viewer, default member
+    createdAt: ISO-8601 datetime, server-generated
+    updatedAt: ISO-8601 datetime, server-generated
+behaviours:
+  - POST /v1/users creates a user -> 201; duplicate email -> 409 problem; invalid body -> 422 problem
+  - GET /v1/users lists users with cursor pagination (limit 1-100, default 20) and optional role filter
+  - GET /v1/users/:id returns a user -> 200; unknown id -> 404 problem; malformed id -> 422 problem
+  - PATCH /v1/users/:id partially updates name/role/email -> 200; email clash -> 409
+  - DELETE /v1/users/:id -> 204; unknown id -> 404 problem
+  - POST and PATCH honour Idempotency-Key (same key + same body replays the first response)
+testMap:
+  "src/**": tests/users.test.ts
+maxTurns: 40
