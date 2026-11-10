@@ -85,6 +85,46 @@ Two smaller gates also come from this harness:
 - `test-integrity` blocks `.skip`, `.only` and `.todo`, and blocks test files with no assertions.
 - `scope-guard` stops the model from loosening `tsconfig.json` or `package.json`.
 
+## Assignment 02: backlog items and the briefing gates
+
+An item's slug is its task name. Two harness-owned files sit outside the model's reach (its paths are confined to the API directory):
+- `docs/contracts/<slug>.md` is the problem statement: Problem, Owner, Metric (name, window, before/after), Scenario (WHEN … THEN …), Not included, and `Read:`, the command the harness runs to read the metric.
+- `ledger/<slug>.jsonl` records the proposal, the stakeholder's typed reply, metric readings, the ship and the close.
+
+```sh
+./bin/harness propose --item <slug>                  # shows the contract; the stakeholder types name + reply at a terminal (piped input refused)
+./bin/harness metric  --item <slug> --phase before   # harness runs the contract's Read command, writes the value into the contract
+./bin/harness run     --task tasks/<slug>.yaml --driver claude
+./bin/harness ship    --run <runId>                  # also requires the recorded yes and a before reading
+./bin/harness metric  --item <slug> --phase after    # after a human merges the PR
+./bin/harness close   --item <slug>                  # outcome check
+```
+
+| Gate | Blocks | Skip attempt that fails |
+|---|---|---|
+| `problem-gate` (pre hook on `write_file`/`edit_file`) | any edit until the contract has every field; names each missing field | edit a source file with no contract |
+| `contract-gate` (pre hook on `finish`, re-checked by `ship`) | the Stop, until the ledger has a typed `human` yes after the latest proposal of the *current* contract (editing the contract voids the yes) | echo "yes" from a tool result and try to finish |
+| `harness close` | closing, until the PR was merged by a non-bot and the harness read the metric before the merge and again after it, with both values in the contract | close without reading the metric |
+
+Self-tests for each skip attempt: `npm test` → "briefing gates (skip attempts)".
+
+### Python repos outside the harness
+
+A task can govern a different git repo: `repo:` (path from the harness root) plus `stack: python`. The worktree and the `harness/<runId>` branch are created in that repo, and `ship` commits only the files the model wrote and opens the PR there. Run evidence (`runs/<runId>`, `tokens/<runId>.json`), the contract and the ledger stay in this repo. For Python tasks:
+- `run_tests` runs pytest, using the repo's `.venv` if it has one.
+- `observed-red` treats non-test `.py` files as source.
+- `scope-guard` limits writes to the task's `writable:` globs and owns `pytest.ini`, `pyproject.toml`, `requirements*.txt` and `conftest.py`.
+- `test-integrity` blocks pytest skip and xfail.
+- The required checks are `py-compile` and `agent-rule-drift`. TypeScript checks don't run.
+
+Backlog items against `Production_Category_AI_Calling_Codebase`. Ship them in this order, because the second item's CI gate would fail while the dead agent is still on main:
+1. `retire-dxnqr56` ([task](tasks/retire-dxnqr56.yaml), [contract](docs/contracts/retire-dxnqr56.md)): metric "agent-rule gaps on origin/main", before **3**.
+2. `agent-rule-drift` ([task](tasks/agent-rule-drift.yaml), [contract](docs/contracts/agent-rule-drift.md)): metric "agent-rule gate in main's CI", before **0**.
+
+Workflow map: [docs/workflow.md](docs/workflow.md). Learnings: [docs/learnings.md](docs/learnings.md).
+
+**Honesty boundary for these gates.** The harness cannot verify *who* is at the terminal; it records the typed name and checks it against the contract Owner. Code the model writes runs under `run_tests` with the same filesystem access as the harness, so a hostile test could write the ledger directly. The ledger is plain JSONL, so that would be visible in review, but it is not prevented.
+
 ## Task files
 
 These are stand-ins: the assignment PDF says a task file and a sample repo would be published, but only the PDF was distributed.

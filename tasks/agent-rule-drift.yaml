@@ -1,0 +1,26 @@
+# Backlog item (Assignment 02): stop cross-agent fixes landing in only some Retell agents.
+name: agent-rule-drift
+mode: brownfield
+stack: python
+repo: ../../Production_Category_AI_Calling_Codebase
+target: .
+brief: |
+  Fixes to the Retell agents are applied by hand to each of the agents/ folders,
+  and some have landed in only one agent first (e491652 fixed the LMS agent;
+  9680f09 had to repeat it for 14 more). Add a gauntlet gate that fails when any
+  agent folder is missing a required rule, so a partial fix cannot merge.
+  Read scripts/gauntlet/run_gate.py and gauntlet.yaml to see how a `run:` gate is declared.
+behaviours:
+  - "scripts/gauntlet/check_agent_rules.py --repo-root <dir> exits 0 when every agent has every rule, 1 otherwise, printing one line per gap: <agent>: <rule> (<file>)"
+  - "Rule extract-before-ending: prompt.json contains priority_0_extract_before_ending and mentions extract_user_details (all agents)"
+  - "Rule email-written-form: config_llm.json's `email` variable description says 'written form' (all agents)"
+  - "Rule hr-no-pricing: prompt.json of agents whose folder name contains _HR_ contains 'NEVER quote' and no $<digit> price"
+  - "An agents/ folder missing from lookup.json, or a lookup.json key with no folder, is a gap"
+  - "gauntlet.yaml declares an agent-rules gate running the script and lists it in jobs.python"
+writable:
+  - scripts/gauntlet/check_agent_rules.py
+  - tests/gauntlet/test_check_agent_rules.py
+  - gauntlet.yaml
+testMap:
+  "scripts/gauntlet/check_agent_rules.py": tests/gauntlet/test_check_agent_rules.py
+maxTurns: 40

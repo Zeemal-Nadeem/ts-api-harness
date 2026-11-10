@@ -1,0 +1,1 @@
+{"at":"2026-11-10T04:44:53.427Z","event":"metric","phase":"before","value":"0","command":"git -C ../../Production_Category_AI_Calling_Codebase fetch -q origin main && git -C ../../Production_Category_AI_Calling_Codebase show origin/main:gauntlet.yaml | grep -c check_agent_rules || true","output":"0"}

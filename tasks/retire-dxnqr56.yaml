@@ -1,0 +1,21 @@
+# Backlog item (Assignment 02): retire the dead Fedora_Medical_AWS_DXNQR56 agent from main.
+name: retire-dxnqr56
+mode: brownfield
+stack: python
+repo: ../../Production_Category_AI_Calling_Codebase
+target: .
+brief: |
+  agents/Fedora_Medical_AWS_DXNQR56 is still on main but is not mapped in
+  lookup.json and missed the 27 Oct fixes (extract_user_details before ending,
+  email in written form). It is the only agent folder with drift. Retire it the
+  way 2abb24a retired four ICS agents: delete its folder, and make sure no
+  registry file still points at it. First add a test that every agents/ folder
+  is mapped in lookup.json and every lookup.json key has a folder.
+behaviours:
+  - "tests/test_agent_registry.py fails while any agents/<folder> is missing from lookup.json or any lookup.json key has no folder"
+  - "Every file under agents/Fedora_Medical_AWS_DXNQR56/ is deleted"
+  - "No other agent folder, prompt or config changes"
+writable:
+  - agents/Fedora_Medical_AWS_DXNQR56/**
+  - tests/test_agent_registry.py
+maxTurns: 25

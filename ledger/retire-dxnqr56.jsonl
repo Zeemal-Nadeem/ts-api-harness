@@ -1,0 +1,1 @@
+{"at":"2026-11-10T04:48:54.458Z","event":"metric","phase":"before","value":"3","command":"d=$(mktemp -d) && git -C ../../Production_Category_AI_Calling_Codebase fetch -q origin main && git -C ../../Production_Category_AI_Calling_Codebase archive origin/main agents lookup.json | tar -x -C \"$d\" && python3 metrics/agent-rule-drift.py \"$d\" 2>/dev/null","output":"3"}
