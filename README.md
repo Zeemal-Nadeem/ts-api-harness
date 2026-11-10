@@ -121,6 +121,8 @@ Backlog items against `Production_Category_AI_Calling_Codebase`. Ship them in th
 1. `retire-dxnqr56` ([task](tasks/retire-dxnqr56.yaml), [contract](docs/contracts/retire-dxnqr56.md)): metric "agent-rule gaps on origin/main", before **3**.
 2. `agent-rule-drift` ([task](tasks/agent-rule-drift.yaml), [contract](docs/contracts/agent-rule-drift.md)): metric "agent-rule gate in main's CI", before **0**.
 
+**Status (10 Nov):** both items have a contract and a before-value read by the harness from `origin/main` (`ledger/*.jsonl`). Neither has shipped: each waits on its stakeholder's typed yes, which the harness will not accept from anyone else. That is the human-yes gate working, not a gap in it.
+
 Workflow map: [docs/workflow.md](docs/workflow.md). Learnings: [docs/learnings.md](docs/learnings.md).
 
 **Honesty boundary for these gates.** The harness cannot verify *who* is at the terminal; it records the typed name and checks it against the contract Owner. Code the model writes runs under `run_tests` with the same filesystem access as the harness, so a hostile test could write the ledger directly. The ledger is plain JSONL, so that would be visible in review, but it is not prevented.
