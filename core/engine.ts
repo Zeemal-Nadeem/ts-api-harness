@@ -28,6 +28,7 @@ export interface RunResult {
   runId: string;
   runDir: string;
   worktree: string;
+  evidenceRoot: string;
   status: "FINISHED" | "INCOMPLETE" | "REFUSED" | "ERROR";
 }
 
@@ -39,7 +40,7 @@ export function toolSpecs(registry: Registry): ToolSpec[] {
 }
 
 // Driver-private payloads (e.g. reasoning blocks) are excluded from both columns.
-const PROGRESS_TOOLS = new Set(["write_file", "edit_file", "run_tests", "run_checks", "finish"]);
+const PROGRESS_TOOLS = new Set(["write_file", "edit_file", "delete_file", "run_tests", "run_checks", "finish"]);
 const STALL_TURNS = 6;
 
 const estimate = (req: TurnRequest): number => estimateTokens(JSON.stringify(req, (k, v: unknown) => (k === "opaque" ? undefined : v)));
@@ -57,7 +58,7 @@ export async function runTask(opts: RunOptions): Promise<RunResult> {
   const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\..*/, "").replace("T", "-");
   const runId = opts.runId ?? `${task.name}-${driver.id}${opts.baseline ? "-baseline" : ""}-${stamp}`;
   const ws = prepareWorkspace(harnessRoot, runId, task);
-  const runDir = join(ws.worktree, "runs", runId);
+  const runDir = join(ws.evidenceRoot, "runs", runId);
   mkdirSync(runDir, { recursive: true });
   const say = (s: string): void => {
     if (!opts.quiet) console.log(s);
@@ -78,18 +79,18 @@ export async function runTask(opts: RunOptions): Promise<RunResult> {
       const p = join(runDir, "logs", name);
       mkdirSync(join(runDir, "logs"), { recursive: true });
       writeFileSync(p, content);
-      return relative(ws.worktree, p);
+      return relative(ws.evidenceRoot, p);
     },
   };
   const standardsOpts = { runDir, beforeRoot: ws.beforeRoot, task };
   writeFileSync(
     join(runDir, "meta.json"),
-    JSON.stringify({ runId, task: task.name, mode: task.mode, driver: driver.id, model: driver.model, baseline: opts.baseline, branch: ws.branch, baseRef: ws.baseRef, target: task.target, taskSpec: task, startedAt: new Date().toISOString() }, null, 2),
+    JSON.stringify({ runId, task: task.name, mode: task.mode, driver: driver.id, model: driver.model, baseline: opts.baseline, branch: ws.branch, baseRef: ws.baseRef, target: task.target, repo: ws.repoRoot, taskSpec: task, startedAt: new Date().toISOString() }, null, 2),
   );
 
   const tools = toolSpecs(registry);
-  const system = buildSystem(registry);
-  const baselineSystem = system + buildFrontload(registry, harnessRoot, ws.apiRoot);
+  const system = buildSystem(registry, task);
+  const baselineSystem = system + buildFrontload(registry, harnessRoot, ws.apiRoot, task);
   const history: Entry[] = [{ kind: "user", text: buildBrief(task, ws.apiRoot) }];
   const rows: { turn: number; baselineInputTokens: number; actualInputTokens: number; providerInputTokens: number; providerOutputTokens: number }[] = [];
   const maxTurns = opts.maxTurns ?? task.maxTurns;
@@ -206,8 +207,8 @@ export async function runTask(opts: RunOptions): Promise<RunResult> {
       providerOutputTokens: sum("providerOutputTokens"),
     },
   };
-  mkdirSync(join(ws.worktree, "tokens"), { recursive: true });
-  writeFileSync(join(ws.worktree, "tokens", `${runId}.json`), JSON.stringify(tokenReport, null, 2));
+  mkdirSync(join(ws.evidenceRoot, "tokens"), { recursive: true });
+  writeFileSync(join(ws.evidenceRoot, "tokens", `${runId}.json`), JSON.stringify(tokenReport, null, 2));
 
   const testsGreen = /^PASS/m.test(finalTests.content);
   const ok = status === "FINISHED" && report.ok && testsGreen;
@@ -229,7 +230,7 @@ export async function runTask(opts: RunOptions): Promise<RunResult> {
   say(`tests             ${finalTests.content.split("\n")[0] ?? ""}`);
   say(`tokens            actual ${actualTotal} vs baseline ${baselineTotal} (est.) -> ${tokenReport.summary.reductionPct}% reduction; peak ${tokenReport.summary.peakReductionPct}%`);
   say(`status            ${status}${ok ? " — ready to ship: harness ship --run " + runId : " — not shippable"}`);
-  return { ok, runId, runDir, worktree: ws.worktree, status };
+  return { ok, runId, runDir, worktree: ws.worktree, evidenceRoot: ws.evidenceRoot, status };
 }
 
 function canonical(v: unknown): string {

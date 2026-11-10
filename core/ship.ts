@@ -2,8 +2,9 @@
 // (nothing is taken from the run's own state except what it claims), then
 // commits on the run's feature branch, pushes that branch, and opens a PR.
 // Never pushes a protected branch, never force-pushes, never commits on red.
-import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { copyFileSync, existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { appendLedger, approval, readLedger } from "./items.ts";
 import { renderSummary, runStandards } from "./standards.ts";
 import { exec } from "./util.ts";
 import { git, worktreePath } from "./workspace.ts";
@@ -25,9 +26,11 @@ type Gate = { name: string; status: "PASS" | "FAIL" | "UNPROVEN"; detail: string
 
 export async function ship(opts: ShipOptions): Promise<boolean> {
   const worktree = worktreePath(opts.harnessRoot, opts.runId);
-  const runDir = join(worktree, "runs", opts.runId);
-  if (!existsSync(join(runDir, "meta.json"))) throw new Error(`no run ${opts.runId} (expected ${runDir})`);
-  const meta = JSON.parse(readFileSync(join(runDir, "meta.json"), "utf8")) as { branch: string; target: string; baseline: boolean; task: string; driver: string; model: string; taskSpec?: Task };
+  // Runs in an outside repo keep their evidence in the harness; in-harness runs keep it on the run's branch.
+  const runDir = [join(worktree, "runs", opts.runId), join(opts.harnessRoot, "runs", opts.runId)].find((d) => existsSync(join(d, "meta.json")));
+  if (!runDir) throw new Error(`no run ${opts.runId} (no runs/${opts.runId}/meta.json in the worktree or the harness)`);
+  const meta = JSON.parse(readFileSync(join(runDir, "meta.json"), "utf8")) as { branch: string; target: string; baseline: boolean; task: string; driver: string; model: string; taskSpec?: Task; repo?: string };
+  const outside = meta.repo !== undefined && meta.repo !== opts.harnessRoot;
   const state = JSON.parse(readFileSync(join(runDir, "state.json"), "utf8")) as RunState;
   const apiRoot = join(worktree, meta.target);
   const beforeRoot = join(worktree, ".harness", "before");
@@ -40,11 +43,15 @@ export async function ship(opts: ShipOptions): Promise<boolean> {
   gate("measurement run", !meta.baseline, meta.baseline ? "baseline runs are for token measurement only" : "actual run");
   gate("finish accepted", state.finished, state.finished ? "finish gate passed during run" : "run never passed the finish gate");
   gate("observed red", Object.keys(state.observedRed).length > 0, Object.keys(state.observedRed).join(", ") || "none");
+  const yes = approval(opts.harnessRoot, meta.task);
+  gate("human yes", yes.ok, yes.reason);
+  const before = readLedger(opts.harnessRoot, meta.task).filter((e) => e.event === "metric" && e.phase === "before").pop();
+  gate("metric before", before !== undefined, before && before.event === "metric" ? `${before.value} read ${before.at}` : "read it first: harness metric --item " + meta.task + " --phase before");
 
   const ctx: ToolContext = {
     harnessRoot: opts.harnessRoot,
     apiRoot,
-    task: meta.taskSpec ?? ({ name: meta.task, mode: "greenfield", target: meta.target, brief: "", behaviours: [], allowBreaking: false, maxTurns: 1 } as Task),
+    task: meta.taskSpec ?? ({ name: meta.task, mode: "greenfield", stack: "ts-api", target: meta.target, brief: "", behaviours: [], allowBreaking: false, maxTurns: 1 } as Task),
     state: { ...state },
     runDir: join(opts.harnessRoot, ".harness", "ship", opts.runId),
     beforeRoot: existsSync(beforeRoot) ? beforeRoot : undefined,
@@ -86,7 +93,19 @@ export async function ship(opts: ShipOptions): Promise<boolean> {
   }
 
   const tokens = join("tokens", `${opts.runId}.json`);
-  git(worktree, "add", "--", meta.target, join("runs", opts.runId), tokens);
+  if (outside) {
+    // Only what the model wrote goes into the outside repo; contract, ledger and run evidence stay in the harness.
+    const written = [...new Set(state.writes)].map((w) => join(meta.target, w));
+    git(worktree, "add", "--", ...written);
+  } else {
+    // The PR carries the item's contract and ledger as they stood when every gate passed.
+    const item = [join("docs", "contracts", `${meta.task}.md`), join("ledger", `${meta.task}.jsonl`)];
+    for (const rel of item) {
+      mkdirSync(join(worktree, rel, ".."), { recursive: true });
+      copyFileSync(join(opts.harnessRoot, rel), join(worktree, rel));
+    }
+    git(worktree, "add", "--", meta.target, join("runs", opts.runId), tokens, ...item);
+  }
   const title = `harness(${meta.task}): ${meta.driver} run ${opts.runId}`;
   git(worktree, "commit", "-q", "-m", title, "-m", `Gates: ${gates.map((g) => `${g.name}=${g.status}`).join(", ")}\nStandards: ${rep.verdict}%\nDriver: ${meta.driver} (${meta.model})`);
   const sha = git(worktree, "rev-parse", "--short", "HEAD");
@@ -95,13 +114,18 @@ export async function ship(opts: ShipOptions): Promise<boolean> {
   const remote = exec("git", ["remote"], { cwd: worktree }).stdout.trim();
   if (!remote.split("\n").includes("origin")) {
     console.log("push UNPROVEN: no 'origin' remote; commit stays on the local feature branch");
+    appendLedger(opts.harnessRoot, meta.task, { event: "shipped", runId: opts.runId, sha });
     return true;
   }
   git(worktree, "push", "-u", "origin", meta.branch);
   console.log(`pushed ${meta.branch}`);
-  if (!opts.openPr) return true;
+  if (!opts.openPr) {
+    appendLedger(opts.harnessRoot, meta.task, { event: "shipped", runId: opts.runId, sha });
+    return true;
+  }
 
-  const tok = existsSync(join(worktree, tokens)) ? (JSON.parse(readFileSync(join(worktree, tokens), "utf8")) as { summary: Record<string, number> }).summary : undefined;
+  const tokFile = join(outside ? opts.harnessRoot : worktree, tokens);
+  const tok = existsSync(tokFile) ? (JSON.parse(readFileSync(tokFile, "utf8")) as { summary: Record<string, number> }).summary : undefined;
   const body = [
     `Opened by the harness after every gate passed. Run \`${opts.runId}\`, driver \`${meta.driver}\` (\`${meta.model}\`).`,
     "",
@@ -116,15 +140,18 @@ export async function ship(opts: ShipOptions): Promise<boolean> {
     tok ? `### Tokens\nactual ${tok.actualInputTokens} vs baseline ${tok.baselineInputTokens} (est.) → **${tok.reductionPct}%** reduction (peak ${tok.peakReductionPct}%). Report: \`${tokens}\`` : "",
     "",
     "### Honesty boundary",
+    outside ? `Contract and ledger: \`docs/contracts/${meta.task}.md\`, \`ledger/${meta.task}.jsonl\` in the harness repo.\n` : "",
     "Proven: the gates above, by the harness's own runner. Not proven: behaviour beyond the tests the model wrote, performance, security review. A human reviews and merges.",
   ].join("\n");
   writeFileSync(join(ctx.runDir, "pr.md"), body);
   const pr = exec("gh", ["pr", "create", "--base", opts.base, "--head", meta.branch, "--title", title, "--body-file", join(ctx.runDir, "pr.md")], { cwd: worktree });
   if (pr.code !== 0) {
     console.log(`pull request UNPROVEN: ${pr.stderr.trim().split("\n")[0]}`);
+    appendLedger(opts.harnessRoot, meta.task, { event: "shipped", runId: opts.runId, sha });
     return true;
   }
   const url = pr.stdout.trim().split("\n").pop() ?? "";
+  appendLedger(opts.harnessRoot, meta.task, { event: "shipped", runId: opts.runId, pr: url, sha });
   writeFileSync(join(ctx.runDir, "pr.json"), JSON.stringify({ runId: opts.runId, url, sha }, null, 2));
   console.log(`pull request ${url}`);
   return true;

@@ -8,10 +8,10 @@ const hook: HookPlugin = {
   kind: "hook",
   id: "observed-red",
   phase: "pre",
-  tools: ["write_file", "edit_file"],
+  tools: ["write_file", "edit_file", "delete_file"],
   run(ev, ctx) {
     const { rel } = resolveInApi(ctx.apiRoot, (ev.args as { path: string }).path);
-    if (!isSourceFile(rel)) return { action: "pass" };
+    if (!isSourceFile(rel, ctx.task)) return { action: "pass" };
     const tests = mappedTests(ctx.task, ctx.apiRoot, rel);
     if (tests.length === 0) {
       return { action: "block", reason: `${rel} has no mapped test. Write tests/<name>.test.ts covering the change, run_tests, see it fail, then edit ${rel}.` };

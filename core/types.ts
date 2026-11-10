@@ -67,10 +67,18 @@ export interface DriverPlugin {
 
 // ---------------------------------------------------------------- tasks
 
+export type Stack = "ts-api" | "python";
+
 export interface Task {
   name: string;
   mode: "greenfield" | "brownfield";
-  /** API directory, relative to the harness root. */
+  /** What is being governed: a TypeScript REST API (default) or a Python repo. Picks the test runner, gates and checks. */
+  stack: Stack;
+  /** A git repo outside the harness to work in (relative to the harness root). Its worktree, branch and PR live there; run evidence stays here. */
+  repo?: string;
+  /** Path globs the model may write, relative to target. Default: src/**, tests/**. */
+  writable?: string[];
+  /** Directory under governance, relative to the harness root (or to `repo` when set). */
   target: string;
   brief: string;
   resource?: {
@@ -189,6 +197,8 @@ export interface CheckPlugin {
   category: string;
   /** Required checks gate finish/ship; optional ones only report. */
   required: boolean;
+  /** Stacks this check applies to. Omitted = ["ts-api"]. */
+  stacks?: Stack[];
   /** Standard text served just-in-time by the get_standard tool. */
   doc?: string;
   run(api: ApiContext): Promise<CheckResult>;

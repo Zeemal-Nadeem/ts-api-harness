@@ -9,6 +9,27 @@ import { join } from "node:path";
 import { walk } from "./api-model.ts";
 import type { Message, Registry, Task, ToolCall } from "./types.ts";
 
+const STACK_LINES: Record<Task["stack"], string[]> = {
+  "ts-api": [
+    "You are the coding model inside a governed harness for TypeScript REST APIs (Express 5 + Zod 4 + Vitest + supertest).",
+  ],
+  python: [
+    "You are the coding model inside a governed harness, working in a Python repository (pytest).",
+  ],
+};
+const STACK_RULES: Record<Task["stack"], string[]> = {
+  "ts-api": [
+    "- Test first: write/extend the mapped test, run it with run_tests and see it FAIL before editing any src/ file it covers.",
+    "- Stay inside the API directory. tsconfig.json and package.json are harness-owned.",
+    "- No .skip/.only/.todo in tests.",
+  ],
+  python: [
+    "- Test first: write/extend the mapped test_*.py, run it with run_tests and see it FAIL before editing any .py file it covers.",
+    "- Write only where the task allows. pytest.ini, pyproject.toml and requirements files are harness-owned.",
+    "- No pytest skip/xfail; every test asserts.",
+  ],
+};
+
 /** Volatile results (tests, checks, search) stay verbatim for this many rounds. */
 export const KEEP_ROUNDS = 2;
 /** Sticky results (file reads, standards) stay verbatim until superseded or this old. */
@@ -31,19 +52,19 @@ export interface ToolEntryResult {
   sticky?: boolean;
 }
 
-export function buildSystem(registry: Registry): string {
-  const checks = registry.checks.map((c) => c.id).join(", ");
+export function buildSystem(registry: Registry, task?: Task): string {
+  const stack = task?.stack ?? "ts-api";
+  const checks = registry.checks.filter((c) => (c.stacks ?? ["ts-api"]).includes(stack)).map((c) => c.id).join(", ");
   return [
-    "You are the coding model inside a governed harness for TypeScript REST APIs (Express 5 + Zod 4 + Vitest + supertest).",
+    ...STACK_LINES[stack],
     "You act only through the tools. Deterministic gates, not you, decide when the work is done.",
     "Enforced by hooks (a breaking call is blocked with the reason):",
-    "- Test first: write/extend the mapped test, run it with run_tests and see it FAIL before editing any src/ file it covers.",
-    "- Stay inside the API directory. tsconfig.json and package.json are harness-owned.",
-    "- No .skip/.only/.todo in tests.",
-    "- finish is refused until run_checks is 100% and run_tests passes.",
+    "- No edit before the item's contract exists; read_contract gives its scenarios.",
+    ...STACK_RULES[stack],
+    "- finish is refused until run_checks is 100%, run_tests passes and the stakeholder has said yes.",
     `Standards checked: ${checks}. Fetch a rule with get_standard before relying on it.`,
     "Fetch files only when you need them (list_files, read_file, search). Prefer edit_file to rewriting files.",
-    "Imports use explicit .ts extensions. Infer types with z.infer; never write interfaces for API data.",
+    ...(stack === "ts-api" ? ["Imports use explicit .ts extensions. Infer types with z.infer; never write interfaces for API data."] : []),
   ].join("\n");
 }
 
@@ -66,15 +87,17 @@ export function buildBrief(task: Task, apiRoot: string): string {
     lines.push("");
   }
   lines.push(`Files in the API directory (fetch what you need):`, ...files.map((f) => `- ${f}`));
-  if (task.mode === "brownfield") lines.push("", "Match the conventions already in the code; read an existing route before writing a new one.");
+  if (task.writable) lines.push("", `You may write: ${task.writable.join(", ")}`);
+  if (task.mode === "brownfield") lines.push("", "Match the conventions already in the code; read existing code before writing new code.");
   else lines.push("", "src/lib (problem, pagination, idempotency) and src/app.ts are scaffolded; app.ts already mounts the router you must create.");
   return lines.join("\n");
 }
 
 /** Baseline: everything a fetcher-less harness would have to front-load. */
-export function buildFrontload(registry: Registry, harnessRoot: string, apiRoot: string): string {
+export function buildFrontload(registry: Registry, harnessRoot: string, apiRoot: string, task?: Task): string {
+  const stack = task?.stack ?? "ts-api";
   const parts: string[] = ["", "# Standards (front-loaded)"];
-  for (const c of registry.checks) parts.push(`## ${c.id}`, standardText(harnessRoot, registry, c.id));
+  for (const c of registry.checks.filter((x) => (x.stacks ?? ["ts-api"]).includes(stack))) parts.push(`## ${c.id}`, standardText(harnessRoot, registry, c.id));
   parts.push("", "# API source (front-loaded)");
   for (const f of walk(apiRoot, (r) => !r.startsWith("node_modules"))) {
     parts.push(`## ${f}`, "```", readFileSync(join(apiRoot, f), "utf8"), "```");

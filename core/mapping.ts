@@ -17,7 +17,10 @@ export function globToRegExp(glob: string): RegExp {
   return new RegExp(`^${re}$`);
 }
 
-export function isSourceFile(rel: string): boolean {
+export const isPyTest = (rel: string): boolean => /(^|\/)test_[^/]*\.py$|_test\.py$/.test(rel);
+
+export function isSourceFile(rel: string, task?: Task): boolean {
+  if (task?.stack === "python") return rel.endsWith(".py") && !isPyTest(rel) && !/(^|\/)conftest\.py$/.test(rel);
   return rel.startsWith("src/") && rel.endsWith(".ts") && !isTestFile(rel);
 }
 
@@ -27,6 +30,11 @@ export function mappedTests(task: Task, apiRoot: string, srcRel: string): string
       .filter(([glob]) => globToRegExp(glob).test(srcRel))
       .map(([, test]) => test);
     if (hits.length) return hits;
+  }
+  if (task.stack === "python") {
+    const name = `test_${basename(srcRel)}`;
+    const hit = walk(apiRoot, (r) => basename(r) === name);
+    return hit.length ? hit : walk(apiRoot, isPyTest);
   }
   const direct = join("tests", basename(srcRel).replace(/\.ts$/, ".test.ts"));
   if (existsSync(join(apiRoot, direct))) return [direct];

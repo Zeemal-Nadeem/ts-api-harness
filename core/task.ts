@@ -9,6 +9,9 @@ const TaskSchema = z
   .object({
     name: z.string().regex(/^[a-z0-9-]+$/),
     mode: z.enum(["greenfield", "brownfield"]),
+    stack: z.enum(["ts-api", "python"]).default("ts-api"),
+    repo: z.string().min(1).optional(),
+    writable: z.array(z.string().min(1)).min(1).optional(),
     target: z.string().min(1),
     brief: z.string().min(1),
     resource: z
@@ -24,7 +27,8 @@ const TaskSchema = z
     maxTurns: z.number().int().positive().default(40),
   })
   .strict()
-  .refine((t) => t.mode === "brownfield" || t.resource !== undefined, "greenfield tasks need a resource");
+  .refine((t) => t.mode === "brownfield" || t.resource !== undefined, "greenfield tasks need a resource")
+  .refine((t) => t.stack === "ts-api" || t.mode === "brownfield", "python tasks are brownfield");
 
 export function loadTask(file: string): { task: Task; text: string } {
   const text = readFileSync(file, "utf8");

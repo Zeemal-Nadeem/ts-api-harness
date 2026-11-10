@@ -1,5 +1,5 @@
 // JIT context fetchers + file edits. One file exporting several tools.
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { z } from "zod";
 import { walk } from "../../core/api-model.ts";
@@ -100,4 +100,18 @@ const editFile: ToolPlugin<{ path: string; find: string; replace: string }> = {
   },
 };
 
-export default [readFile, listFiles, search, writeFile, editFile];
+const deleteFile: ToolPlugin<{ path: string }> = {
+  kind: "tool",
+  name: "delete_file",
+  description: "Delete one file in the working directory.",
+  input: z.object({ path: z.string() }),
+  async run({ path }, ctx) {
+    const { abs, rel } = resolveInApi(ctx.apiRoot, path);
+    if (!existsSync(abs)) return { content: `ERROR: ${rel} does not exist` };
+    rmSync(abs);
+    ctx.state.writes.push(rel);
+    return { content: `deleted ${rel}`, summary: `delete_file ${rel}`, contextKey: `file:${rel}` };
+  },
+};
+
+export default [readFile, listFiles, search, writeFile, editFile, deleteFile];

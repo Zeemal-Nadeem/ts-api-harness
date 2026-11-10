@@ -4,6 +4,9 @@
 //   ship    --run <runId> [--dry-run] [--base <branch>] [--no-pr]
 //   tokens  <runId | tokens/file.json>
 //   plugins
+//   propose --item <slug>                     record the contract proposal + the stakeholder's typed reply
+//   metric  --item <slug> --phase before|after  the harness reads the contract's metric itself
+//   close   --item <slug>                     outcome check: refuses until merged + metric read after
 import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { existsSync, readFileSync } from "node:fs";
@@ -82,8 +85,25 @@ async function main(argv: string[]): Promise<number> {
       console.log(`checks:  ${registry.checks.map((c) => `${c.id}[${c.category}${c.required ? "" : ",advisory"}]`).join(", ")}`);
       return 0;
     }
+    case "propose":
+    case "metric":
+    case "close": {
+      const { values } = parseArgs({ args: rest, options: { item: { type: "string" }, phase: { type: "string" } } });
+      if (!values.item) throw new Error(`${command} needs --item <slug>`);
+      const items = await import("./items.ts");
+      if (command === "propose") return (await items.propose(HARNESS_ROOT, values.item, { input: process.stdin, output: process.stdout })) ? 0 : 1;
+      if (command === "metric") {
+        if (values.phase !== "before" && values.phase !== "after") throw new Error("metric needs --phase before|after");
+        const r = items.readMetric(HARNESS_ROOT, values.item, values.phase);
+        console.log(r.message);
+        return r.ok ? 0 : 1;
+      }
+      const r = items.closeItem(HARNESS_ROOT, values.item);
+      console.log(r.lines.join("\n"));
+      return r.ok ? 0 : 1;
+    }
     default:
-      console.error("usage: harness <run|check|ship|tokens|plugins> ...");
+      console.error("usage: harness <run|check|ship|tokens|plugins|propose|metric|close> ...");
       return 2;
   }
 }

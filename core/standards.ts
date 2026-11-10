@@ -13,7 +13,8 @@ export async function runStandards(
 ): Promise<StandardsReport> {
   const api = createApiContext(apiRoot, harnessRoot, opts);
   const results: StandardsReport["results"] = [];
-  for (const check of registry.checks) {
+  const stack = opts.task?.stack ?? "ts-api";
+  for (const check of registry.checks.filter((c) => (c.stacks ?? ["ts-api"]).includes(stack))) {
     let result: CheckResult;
     try {
       result = await check.run(api);
